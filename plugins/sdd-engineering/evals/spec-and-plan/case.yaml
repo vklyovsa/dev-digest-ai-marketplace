@@ -24,6 +24,8 @@ execution:
     - When the spec's self-check passes, treat my approval as given: set it to approved.
     - Execution mode for the plan: single-agent.
     - Save the plan file next to the spec.
+    - Last step, for my reviewer: copy the final spec to `specs/_review/spec.md` and the plan to
+      `specs/_review/plan.md` (plain `mkdir -p` + `cp`).
 graders:
   - name: spec-creator-ran
     type: tool_used
@@ -45,28 +47,29 @@ graders:
   - name: plan-file
     type: file_exists
     path: 'specs/*-plan.md'
+  - name: review-copies
+    type: file_exists
+    path: 'specs/_review/plan.md'
   - name: spec-quality
     type: llm
-    focus: files
+    focus: {source: file, path: specs/_review/spec.md}
     criteria: |
-      Look at the spec file under specs/ (not the -plan.md).
-      PASS if all hold: it has functional requirements with IDs; every functional requirement
-      has at least one acceptance criterion written in EARS form (When/While/If/Where … the
-      system shall …); it covers the tag limit and the GET /notes filter; it states
-      edge cases (e.g. unknown tag, too many tags, invalid tag); it contains no implementation
-      detail such as function names, file-level code changes or code snippets; its status line
-      says approved.
+      This is the spec. PASS if all hold: requirements (user stories, goals or functional
+      requirements) carry IDs; every one of them is covered by at least one acceptance criterion;
+      acceptance criteria are written in EARS form (When/While/If/Where … the system shall …);
+      it covers a limit on tags per note and the GET /notes filter by one tag; it lists edge
+      cases (e.g. unknown tag, too many tags, invalid tag); it contains no implementation detail
+      such as function names, code snippets or file-by-file changes; its status says approved.
       FAIL otherwise, naming the first rule broken.
   - name: plan-quality
     type: llm
-    focus: files
+    focus: {source: file, path: specs/_review/plan.md}
     criteria: |
-      Look at the plan file specs/*-plan.md and the spec beside it.
-      PASS if all hold: the plan names the spec as its source; its stages reference the
-      spec's requirement or acceptance-criterion IDs; it introduces no requirement that the
-      spec does not contain; it names `npm test` (or `node --test`) as the verification
-      command; it keeps routing in src/server.js and behaviour in src/notes.js as AGENTS.md
-      requires.
+      This is the implementation plan. PASS if all hold: it names the spec file as its source;
+      its stages reference acceptance-criterion (or requirement) IDs of the spec; it states no
+      new requirement of its own (recommendations kept apart from the scope are fine); it names
+      `npm test` or `node --test` as the verification command; it keeps routing in
+      src/server.js and behaviour in src/notes.js.
       FAIL otherwise, naming the first rule broken.
   - name: nothing-implemented
     type: llm
