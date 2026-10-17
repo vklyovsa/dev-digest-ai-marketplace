@@ -1,0 +1,74 @@
+schema_version: "1.1"
+name: spec-and-plan
+description: >
+  The fixed SDD scenario used for the cost baseline: the user asks for a spec and a plan of a
+  small feature in an existing repository. spec-creator writes the spec, the session approves
+  it on the user's standing instruction, implementation-planner plans from it, nothing is
+  implemented.
+tags: [baseline, sdd]
+runs: 3
+context:
+  scaffold_script: ../_scaffold/notes-api.sh
+execution:
+  max_turns: 80
+  timeout_seconds: 1800
+  allowed_tools: [Agent, SendMessage, Read, Glob, Grep, Bash, Write, Edit, Skill]
+  prompt: |
+    I want tags on notes in this repository: a note can carry a few short tags, and
+    `GET /notes` can be filtered by one tag. Prepare the spec and then the implementation
+    plan with the sdd-engineering workflow. Do not implement anything.
+
+    Standing instructions for this run, because I am not available to answer:
+    - For every question an agent asks, take its recommended option.
+    - When the spec's self-check passes, treat my approval as given: set it to approved.
+    - Execution mode for the plan: single-agent.
+    - Save the plan file next to the spec.
+graders:
+  - name: spec-creator-ran
+    type: tool_used
+    tool: Agent
+    input_match: 'sdd-engineering:spec-creator'
+  - name: planner-ran
+    type: tool_used
+    tool: Agent
+    input_match: 'sdd-engineering:implementation-planner'
+  - name: no-implementer
+    type: tool_used
+    tool: Agent
+    input_match: 'sdd-engineering:implementer'
+    max: 0
+  - name: spec-file
+    type: file_exists
+    path: 'specs/*tag*.md'
+  - name: plan-file
+    type: file_exists
+    path: 'specs/*-plan.md'
+  - name: spec-quality
+    type: llm
+    focus: files
+    criteria: |
+      Look at the spec file under specs/ (not the -plan.md).
+      PASS if all hold: it has functional requirements with IDs; every functional requirement
+      has at least one acceptance criterion written in EARS form (When/While/If/Where … the
+      system shall …); it covers the tag limit and the GET /notes filter; it states
+      edge cases (e.g. unknown tag, too many tags, invalid tag); it contains no implementation
+      detail such as function names, file-level code changes or code snippets; its status line
+      says approved.
+      FAIL otherwise, naming the first rule broken.
+  - name: plan-quality
+    type: llm
+    focus: files
+    criteria: |
+      Look at the plan file specs/*-plan.md and the spec beside it.
+      PASS if all hold: the plan names the spec as its source; its stages reference the
+      spec's requirement or acceptance-criterion IDs; it introduces no requirement that the
+      spec does not contain; it names `npm test` (or `node --test`) as the verification
+      command; it keeps routing in src/server.js and behaviour in src/notes.js as AGENTS.md
+      requires.
+      FAIL otherwise, naming the first rule broken.
+  - name: nothing-implemented
+    type: llm
+    focus: trace
+    criteria: |
+      PASS if no file under src/ or test/ was created or modified during the run (only files
+      under specs/ were written). FAIL if any source or test file was edited.

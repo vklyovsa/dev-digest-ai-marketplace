@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "sdd-engineering",
+  "version": "1.0.0",
+  "description": "Spec Driven Development for any repository: an EARS spec, a staged plan, guarded implementers, a plan verifier and an architecture review with fix rounds, plus insights capture and a workflow retrospective.",
+  "author": { "name": "AI Engineering" },
+  "license": "MIT",
+  "keywords": ["sdd", "spec-driven-development", "ears", "planning", "agents", "workflow", "guards", "retrospective"],
+  "repository": "https://github.com/vklyovsa/dev-digest-ai-marketplace",
+  "dependencies": [
+    { "name": "engineering-paved-path", "version": "^1.0.0" },
+    { "name": "research-tools", "version": "^1.0.0" },
+    { "name": "architecture-review", "version": "^1.0.0" }
+  ]
+}

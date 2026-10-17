@@ -1,0 +1,28 @@
+schema_version: "1.1"
+name: finds-layer-violation
+description: The reviewer reads the repository's ARCHITECTURE.md and flags a route importing the db layer.
+tags: [smoke]
+runs: 1
+context:
+  scaffold_script: ../_scaffold/layered-app.sh
+execution:
+  max_turns: 20
+  timeout_seconds: 600
+  allowed_tools: [Agent, Read, Glob, Grep, Bash]
+  prompt: Run the architecture-review architecture-reviewer on the open (staged) diff and give me its findings.
+graders:
+  - name: reviewer-ran
+    type: tool_used
+    tool: Agent
+    input_match: 'architecture-review:architecture-reviewer'
+  - name: names-file
+    type: regex
+    pattern: 'src/routes/admin\.js'
+    target: last_message
+  - name: right-rule
+    type: llm
+    focus: last_message
+    criteria: |
+      PASS if the findings report that src/routes/admin.js imports from src/db/ and that this
+      breaks the rule in ARCHITECTURE.md (routes must not import db), with severity CRITICAL or
+      WARNING. FAIL if this violation is missing or attributed to a rule the repository does not state.

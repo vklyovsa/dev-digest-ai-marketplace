@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "architecture-review",
+  "version": "1.0.0",
+  "description": "A read-only architecture reviewer that checks a diff against the repository's own architecture rules, falling back to onion and frontend architecture rulebooks.",
+  "author": { "name": "AI Engineering" },
+  "license": "MIT",
+  "keywords": ["architecture", "review", "layering", "dependency-cruiser", "read-only"],
+  "repository": "https://github.com/vklyovsa/dev-digest-ai-marketplace",
+  "dependencies": [
+    { "name": "engineering-paved-path", "version": "^1.0.0" }
+  ]
+}

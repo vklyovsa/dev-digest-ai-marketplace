@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "research-tools",
+  "version": "1.0.0",
+  "description": "A read-only researcher agent that answers one concrete question with evidence from the repository or from official sources, guarded by a hook that blocks file writes.",
+  "author": { "name": "AI Engineering" },
+  "license": "MIT",
+  "keywords": ["research", "agent", "read-only", "evidence"],
+  "repository": "https://github.com/vklyovsa/dev-digest-ai-marketplace"
+}
