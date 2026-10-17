@@ -10,7 +10,7 @@ Everything here is in English: docs, prompts, code comments, commit messages.
 | A skill / agent to an existing plugin | `plugins/<plugin>/skills/<skill>/SKILL.md`, `plugins/<plugin>/agents/<agent>.md` | the plugin's `README.md` |
 | A technical skill several plugins need | `plugins/engineering-paved-path/skills/` — never a copy in another plugin | `docs/PLUGIN-GUIDELINES.md` § Dependencies |
 | A hook | `plugins/<plugin>/hooks/hooks.json` + the script beside it + rows in its `guard-cases.tsv` | `docs/SECURITY.md` |
-| A behaviour eval | `plugins/<plugin>/evals/<case>/{prompt.md,graders/*.md}` | `docs/PLUGIN-GUIDELINES.md` § Evals |
+| A behaviour eval | `plugins/<plugin>/evals/<case>/{prompt.md,graders/*.md}` or `case.yaml` (+ `scaffold.sh` inside the case) | `docs/PLUGIN-GUIDELINES.md` § Evals |
 | Catalog site changes | `site/`, `scripts/build-index.mjs` | `docs/SITE-SPEC.md` |
 
 ## Plugin manifest fields
@@ -52,8 +52,9 @@ claude --plugin-dir ./plugins/engineering-paved-path \
 
 The PR template carries it. In short: version bumped, CHANGELOG entry, checks green, no
 secrets or absolute paths, namespaced cross-references, an eval for a behaviour change, hooks
-and new permissions called out. CI runs `validate` and `build-site`; `CODEOWNERS` review is
-required on `main`.
+and new permissions called out. CI runs `validate marketplace` and `build catalog site`; the `main` ruleset requires
+a pull request and both checks. Approvals are `0` while the repository has one owner
+(`docs/SECURITY.md` § Review before merge).
 
 ## Releasing
 

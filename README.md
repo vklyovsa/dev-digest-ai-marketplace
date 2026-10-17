@@ -40,10 +40,11 @@ Updating, auto-update, release channels and rollback: [`docs/RELEASES.md`](docs/
 ```
 .claude-plugin/marketplace.json   catalog: one entry per plugin (name, source, description)
 plugins/<name>/                   one plugin each — manifest, agents, skills, hooks, evals, docs
-docs/                             PLUGIN-GUIDELINES, SECURITY, RELEASES, SITE-SPEC, COST-BASELINE
+docs/                             PLUGIN-GUIDELINES, SECURITY, RELEASES, SITE-SPEC, COST-BASELINE, LAB-REPORT
 scripts/validate.mjs              repository rules CI enforces on top of `claude plugin validate`
 scripts/build-index.mjs           builds the catalog index for the site
 scripts/release.sh, rollback.sh   release checks and the rollback sequence (print-only)
+scripts/eval.sh, eval-metrics.mjs run a plugin's evals from the root; tokens and calls per run
 site/                             catalog site (React + Vite), deployed by .github/workflows/pages.yml
 ```
 
@@ -51,3 +52,5 @@ site/                             catalog site (React + Vite), deployed by .gith
 
 [`CONTRIBUTING.md`](CONTRIBUTING.md) — where files go, checks to run, PR checklist.
 Security rules: [`docs/SECURITY.md`](docs/SECURITY.md).
+
+Lab evidence (L08): [`docs/LAB-REPORT.md`](docs/LAB-REPORT.md).

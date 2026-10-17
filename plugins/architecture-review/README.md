@@ -132,3 +132,15 @@ node plugins/architecture-review/scripts/check-guard.mjs
   the fallback rulebooks.
 - Dependencies: `engineering-paved-path` `^1.0.0`. Node.js >= 22 for the guard and the
   diff script (see `COMPATIBILITY.md`).
+
+## Evals
+
+| Case | Checks |
+|---|---|
+| `finds-layer-violation` | on a fixture whose `ARCHITECTURE.md` forbids routes → db, a staged `src/routes/admin.js` importing `src/db/` is reported against that rule |
+
+```bash
+scripts/eval.sh architecture-review --ablation none --trust-plugin --scaffold --allow-tools Bash
+```
+
+The case loads `engineering-paved-path` beside this plugin (`plugins:` in `case.yaml`).

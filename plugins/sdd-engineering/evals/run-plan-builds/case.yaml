@@ -1,0 +1,47 @@
+schema_version: "1.1"
+name: run-plan-builds
+description: >
+  The build half: /sdd-engineering:run-plan hands the plan's briefs to sdd-engineering:implementer,
+  then sdd-engineering:plan-verifier checks the diff against the plan and its acceptance criteria,
+  then architecture-review:architecture-reviewer gates it; the tests are green at the end.
+tags: [sdd, build]
+plugins: [../../../engineering-paved-path, ../../../research-tools, ../../../architecture-review, ../..]
+runs: 1
+context:
+  scaffold_script: scaffold.sh
+execution:
+  max_turns: 80
+  timeout_seconds: 2400
+  allowed_tools: [Agent, SendMessage, Read, Glob, Grep, Bash, Write, Edit, Skill]
+  prompt: /sdd-engineering:run-plan specs/2026-10-17-note-tags-plan.md
+graders:
+  - name: implementer-ran
+    type: tool_used
+    tool: Agent
+    input_match: 'sdd-engineering:implementer'
+  - name: plan-verifier-ran
+    type: tool_used
+    tool: Agent
+    input_match: 'sdd-engineering:plan-verifier'
+  - name: architecture-review-ran
+    type: tool_used
+    tool: Agent
+    input_match: 'architecture-review:architecture-reviewer'
+  - name: no-spec-or-plan-agents
+    type: tool_used
+    tool: Agent
+    input_match: 'sdd-engineering:(spec-creator|implementation-planner)'
+    min: 0
+    max: 0
+  - name: verifier-reports-acs
+    type: regex
+    target: last_message
+    pattern: '\bAC-\d+'
+  - name: tests-green
+    type: llm
+    focus: last_message
+    criteria: |
+      PASS if the final report shows the check command (npm test / node --test) passing after
+      the implementation, reports plan-verifier's counts with no missing item left unexplained,
+      and reports the architecture review's outcome. FAIL if tests fail, the check was not run,
+      or the report omits the verifier or the review.
