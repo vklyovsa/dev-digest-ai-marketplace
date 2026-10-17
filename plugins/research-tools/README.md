@@ -100,3 +100,13 @@ calls and writes nothing.
 - Configuration: none. The repository's `CLAUDE.md` / `AGENTS.md` override the agent's
   defaults where they disagree.
 - Dependencies: none.
+
+## Evals
+
+`evals/delegates-research` (a question that needs an official source is delegated to
+`research-tools:researcher` and answered with a URL) and `evals/negative-trivial` (arithmetic
+starts no agent). Run from the marketplace root:
+
+```bash
+scripts/eval.sh research-tools --ablation none --trust-plugin
+```
