@@ -1,0 +1,11 @@
+node_modules/
+site/dist/
+site/public/index.json
+site/public/releases.json
+site/public/stats.json
+site/public/bodies/
+**/evals/results/
+.DS_Store
+*.log
+.env
+.env.*

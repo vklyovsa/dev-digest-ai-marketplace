@@ -1,0 +1,61 @@
+name: validate
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: validate marketplace
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Repository rules (scripts/validate.mjs)
+        run: node scripts/validate.mjs
+
+      - name: Install Claude Code CLI
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: claude plugin validate (marketplace + every plugin)
+        run: |
+          claude plugin validate .
+          for dir in plugins/*/; do
+            echo "::group::$dir"
+            claude plugin validate "$dir"
+            echo "::endgroup::"
+          done
+
+      - name: Hook guards (case tables, no model)
+        run: |
+          for check in plugins/*/scripts/check-guard*.mjs; do
+            echo "::group::$check"
+            node "$check"
+            echo "::endgroup::"
+          done
+
+  build-site:
+    name: build catalog site
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+      - name: Build index and site
+        working-directory: site
+        run: |
+          npm ci
+          npm run typecheck
+          npm run build

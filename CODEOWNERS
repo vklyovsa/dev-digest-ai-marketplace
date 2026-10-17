@@ -1,0 +1,12 @@
+# Every path needs a review from the team that owns it.
+# Replace @vklyovsa with a GitHub team (e.g. @org/ai-engineering) once the repository moves to an organization.
+
+*                                   @vklyovsa
+/.claude-plugin/                    @vklyovsa
+/.github/                           @vklyovsa
+/plugins/engineering-paved-path/    @vklyovsa
+/plugins/research-tools/            @vklyovsa
+/plugins/architecture-review/       @vklyovsa
+/plugins/sdd-engineering/           @vklyovsa
+/site/                              @vklyovsa
+/scripts/                           @vklyovsa
