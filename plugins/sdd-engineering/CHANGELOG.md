@@ -3,6 +3,14 @@
 All notable changes to `sdd-engineering`. Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
 versions follow [SemVer](https://semver.org/).
 
+## [1.1.0] - 2026-10-17
+
+### Added
+
+- `spec-creator` does not finish a spec while a mandatory requirement (every `G-n`, every `US-n`) has no acceptance criterion: it writes the criterion the sources support, or marks it `[NEEDS CLARIFICATION]` and returns a blocking question — never invents one, never drops the requirement.
+- `check-spec`: a goal must reach an AC through `covers:` when the template has no Traceability section.
+- Eval `spec-requires-ac`.
+
 ## [1.0.0] - 2026-10-17
 
 ### Added

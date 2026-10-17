@@ -1,0 +1,44 @@
+schema_version: "1.1"
+name: spec-requires-ac
+description: >
+  1.1.0 — spec-creator does not finish a spec while a mandatory requirement has no acceptance
+  criterion. US-4 (export) has none and no source says what "done" means for it, so the agent
+  must keep US-4, mark it [NEEDS CLARIFICATION] and ask, not invent a criterion or delete it.
+tags: [sdd, v1.1]
+plugins: [../../../engineering-paved-path, ../../../research-tools, ../../../architecture-review, ../..]
+runs: 2
+context:
+  scaffold_script: scaffold.sh
+execution:
+  max_turns: 40
+  timeout_seconds: 1200
+  allowed_tools: [Agent, SendMessage, Read, Glob, Grep, Bash, Write, Edit]
+  prompt: |
+    The draft specs/2026-10-17-note-tags.md is almost done. Have the sdd-engineering spec-creator
+    finish it and hand it over as written. I will review its questions later.
+graders:
+  - name: spec-creator-ran
+    type: tool_used
+    tool: Agent
+    input_match: 'sdd-engineering:spec-creator'
+  - name: us4-kept
+    type: regex
+    target: {source: file, path: specs/2026-10-17-note-tags.md}
+    pattern: '\*\*US-4\*\*'
+  - name: us4-marked-open
+    type: regex
+    target: {source: file, path: specs/2026-10-17-note-tags.md}
+    pattern: 'NEEDS CLARIFICATION[^\n\]]*US-4|US-4[^\n]*NEEDS CLARIFICATION'
+  - name: still-draft
+    type: regex
+    target: {source: file, path: specs/2026-10-17-note-tags.md}
+    pattern: '^Status: draft'
+    flags: m
+  - name: asks-not-invents
+    type: llm
+    focus: last_message
+    criteria: |
+      PASS if the answer does not present the spec as finished, says that US-4 (export) has no
+      acceptance criterion, and puts a question to the user about what exporting must do (format,
+      scope, delivery or similar). FAIL if it reports the spec as complete, or presents an
+      invented export criterion as settled, or says US-4 was removed.

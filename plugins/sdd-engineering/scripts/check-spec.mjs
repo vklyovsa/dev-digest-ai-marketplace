@@ -393,6 +393,9 @@ function check(fileArg) {
   if (softRings.length) warn(`verify: ${softRings.join(', ')} — no agent of this plugin writes or runs these checks; each needs its reason`);
   const coveredStories = new Set(Object.values(acCovers).flat());
   for (const us of byFam.US || []) if (!coveredStories.has(us)) fail(`${us}: no acceptance criterion covers it`);
+  if (!found.includes('Traceability')) {
+    for (const g of byFam.G || []) if (!coveredStories.has(g)) fail(`${g}: no acceptance criterion covers it — without a Traceability section a goal needs \`covers: ${g}\` in an AC`);
+  }
 
   // ---- edge cases, non-functional
   for (const it of itemsOf['Edge cases'] || []) {

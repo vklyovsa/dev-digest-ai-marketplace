@@ -350,6 +350,17 @@ node "${CLAUDE_PLUGIN_ROOT}/scripts/check-spec.mjs" <path of the spec>
 Fix every `FAIL` and run it again until it prints `ok`. Read every `WARN`: fix it, or say in the
 report why it stands. The last output goes into the report as it was printed.
 
+**Every mandatory requirement has an acceptance criterion.** Mandatory = every goal `G-n` and
+every user story `US-n`. A story must be named in the `covers:` of at least one `AC-n`; a goal
+must reach at least one `AC-n` — through its Traceability row, or, when the template has no
+Traceability section, through `covers:`. Until every one does,
+the spec is not finished: you do not return `## Written`. For each uncovered requirement either
+write the criterion the sources support, or — when they do not say what "done" looks like for it —
+mark it `[NEEDS CLARIFICATION: acceptance criterion for <ID> → OQ-n]`, add the blocking question
+to `## Questions for the user` and return those questions instead of a finished draft. Removing
+or rewording a requirement to dodge the rule is not allowed. `check-spec` reports an uncovered
+`G-n` / `US-n` as a `FAIL`.
+
 Then what the script cannot judge — go through the spec once more as its reader:
 
 - Each criterion's response can be observed from outside, and the system it names is a real

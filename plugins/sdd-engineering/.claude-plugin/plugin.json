@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "sdd-engineering",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Spec Driven Development for any repository: an EARS spec, a staged plan, guarded implementers, a plan verifier and an architecture review with fix rounds, plus insights capture and a workflow retrospective.",
   "author": { "name": "AI Engineering" },
   "license": "MIT",
