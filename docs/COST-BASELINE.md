@@ -92,6 +92,26 @@ $5.97. Deterministic graders: 3/3 green. One failure: `plan-quality`, votes FAIL
   cost-neutral. The next candidate with a real expected effect is the number of agent
   launches (run 3 of the baseline doubled its cost by relaunching), not prompt size.
 
+## Cost per successful workflow
+
+Sum of the arm's run costs ÷ runs that passed. Every run is paid for, so a failed run
+raises the price of each success.
+
+| arm | run costs | passed, 16-grader gate | $ / success | passed, deterministic graders | $ / success |
+|---|---|---|---|---|---|
+| baseline (`b37449d`) | $6.369 | 1/3 | **$6.37** | 3/3 | **$2.12** |
+| one copy per instruction (`4c40e7d`) | $5.970 | 2/3 | **$2.99** | 3/3 | **$1.99** |
+| 1.1.0, current 21-grader gate (`b3310c5`) | $6.844 | 3/3 | **$2.28** | 3/3 | **$2.28** |
+
+- **Trust the deterministic column: $2.12 → $1.99 (−6 %).** It is the same run-to-run noise
+  as the medians above, so the optimisation stays cost-neutral.
+- **The 16-grader column ($6.37 → $2.99) is not a saving.** Its passes were decided by the
+  two LLM judges that split their votes on correct artifacts; one flipped vote moves the
+  baseline from $6.37 to $3.18. Those judges were replaced, which is why the current gate
+  is 20 deterministic graders + one judge.
+- The 1.1.0 figure is under a stricter gate and includes one relaunching run ($3.12), so it
+  is not a before/after comparison with the two arms.
+
 ## Run log
 
 | date | commit | arm | runs | notes |
