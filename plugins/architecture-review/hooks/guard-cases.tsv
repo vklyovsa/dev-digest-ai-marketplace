@@ -1,0 +1,120 @@
+expected_exit	agent_type	tool_name	input
+# --- other agents and the main session pass untouched
+0	-	Bash	rm -rf build
+0	-	Edit	src/app.ts
+0	other-plugin:some-agent	Bash	pnpm install
+0	architecture-reviewer	Bash	rm -rf build
+# --- non-Bash, non-write tools pass
+0	architecture-review:architecture-reviewer	Read	src/app.ts
+0	architecture-review:architecture-reviewer	Skill	engineering-paved-path:onion-architecture
+# --- write tools are blocked
+2	architecture-review:architecture-reviewer	Write	review.md
+2	architecture-review:architecture-reviewer	Edit	src/app.ts
+2	architecture-review:architecture-reviewer	MultiEdit	src/app.ts
+2	architecture-review:architecture-reviewer	NotebookEdit	x.ipynb
+# --- the collect-diff script
+0	architecture-review:architecture-reviewer	Bash	{PLUGIN_ROOT}/skills/review-rubric/scripts/collect-diff.sh --format list
+0	architecture-review:architecture-reviewer	Bash	bash {PLUGIN_ROOT}/skills/review-rubric/scripts/collect-diff.sh --format list --base main
+0	architecture-review:architecture-reviewer	Bash	sh {PLUGIN_ROOT}/skills/review-rubric/scripts/collect-diff.sh --scope working --format diff
+0	architecture-review:architecture-reviewer	Bash	cd src && {PLUGIN_ROOT}/skills/review-rubric/scripts/collect-diff.sh --format json
+2	architecture-review:architecture-reviewer	Bash	bash ./scripts/collect-diff.sh --format list
+2	architecture-review:architecture-reviewer	Bash	./review-rubric/scripts/collect-diff.sh
+2	architecture-review:architecture-reviewer	Bash	{PLUGIN_ROOT}/skills/review-rubric/scripts/collect-diff.sh --format list > files.txt
+# --- read-only git
+0	architecture-review:architecture-reviewer	Bash	git diff --stat main...HEAD
+0	architecture-review:architecture-reviewer	Bash	git log --oneline -10
+0	architecture-review:architecture-reviewer	Bash	git show HEAD:src/app.ts
+0	architecture-review:architecture-reviewer	Bash	git rev-parse --short HEAD
+0	architecture-review:architecture-reviewer	Bash	git merge-base main HEAD
+0	architecture-review:architecture-reviewer	Bash	git ls-files src/modules
+0	architecture-review:architecture-reviewer	Bash	git -C packages/api diff HEAD -- src
+0	architecture-review:architecture-reviewer	Bash	git branch --show-current
+0	architecture-review:architecture-reviewer	Bash	git remote -v
+2	architecture-review:architecture-reviewer	Bash	git commit -am fix
+2	architecture-review:architecture-reviewer	Bash	git add -A
+2	architecture-review:architecture-reviewer	Bash	git checkout main
+2	architecture-review:architecture-reviewer	Bash	git stash
+2	architecture-review:architecture-reviewer	Bash	git push
+2	architecture-review:architecture-reviewer	Bash	git reset --hard HEAD~1
+2	architecture-review:architecture-reviewer	Bash	git fetch
+2	architecture-review:architecture-reviewer	Bash	git branch tmp
+2	architecture-review:architecture-reviewer	Bash	git diff --output=x.patch
+2	architecture-review:architecture-reviewer	Bash	git -c core.pager=less log
+# --- text tools
+0	architecture-review:architecture-reviewer	Bash	grep -rnE "container\\.(github\\(|llm\\()" src/modules
+0	architecture-review:architecture-reviewer	Bash	grep -rn "from 'drizzle-orm'" src/modules/*/routes.ts
+0	architecture-review:architecture-reviewer	Bash	rg -n "fetch\\(" src/app
+0	architecture-review:architecture-reviewer	Bash	cat .dependency-cruiser.cjs
+0	architecture-review:architecture-reviewer	Bash	ls -la docs/adr
+0	architecture-review:architecture-reviewer	Bash	find src -name 'routes.ts' -path '*modules*'
+0	architecture-review:architecture-reviewer	Bash	sed -n '1,80p' ARCHITECTURE.md
+0	architecture-review:architecture-reviewer	Bash	sed -n '/## Layers/,/## /p' docs/architecture.md
+0	architecture-review:architecture-reviewer	Bash	sed -n -e '10,20p' -e '40p' src/app.ts
+0	architecture-review:architecture-reviewer	Bash	jq '.scripts' package.json
+0	architecture-review:architecture-reviewer	Bash	diff -u packages/api/src/contracts/a.ts packages/web/src/contracts/a.ts
+0	architecture-review:architecture-reviewer	Bash	head -50 src/app.ts | wc -l
+0	architecture-review:architecture-reviewer	Bash	git diff main -- src | grep '^+' | sort | uniq -c
+0	architecture-review:architecture-reviewer	Bash	ls 2>/dev/null || true
+0	architecture-review:architecture-reviewer	Bash	NO_COLOR=1 git diff --stat
+2	architecture-review:architecture-reviewer	Bash	sed 's/a/b/' src/app.ts
+2	architecture-review:architecture-reviewer	Bash	sed -n 's/a/b/w out.txt' src/app.ts
+2	architecture-review:architecture-reviewer	Bash	sed -n -i '1p' src/app.ts
+2	architecture-review:architecture-reviewer	Bash	sed -n -f script.sed src/app.ts
+2	architecture-review:architecture-reviewer	Bash	find . -name '*.ts' -delete
+2	architecture-review:architecture-reviewer	Bash	find . -exec cat {} \;
+2	architecture-review:architecture-reviewer	Bash	sort -o out.txt in.txt
+2	architecture-review:architecture-reviewer	Bash	uniq in.txt out.txt
+2	architecture-review:architecture-reviewer	Bash	rg --pre ./run.sh foo
+2	architecture-review:architecture-reviewer	Bash	awk '{print}' src/app.ts
+2	architecture-review:architecture-reviewer	Bash	cat src/app.ts > copy.ts
+2	architecture-review:architecture-reviewer	Bash	grep foo src >> hits.txt
+2	architecture-review:architecture-reviewer	Bash	cat src/app.ts | tee copy.ts
+2	architecture-review:architecture-reviewer	Bash	GIT_EXTERNAL_DIFF=./x.sh git diff
+# --- static checks
+0	architecture-review:architecture-reviewer	Bash	npx --no-install depcruise src --config .dependency-cruiser.cjs
+0	architecture-review:architecture-reviewer	Bash	pnpm exec depcruise src --config .dependency-cruiser.cjs
+0	architecture-review:architecture-reviewer	Bash	cd packages/api && pnpm exec depcruise src --config .dependency-cruiser.cjs
+0	architecture-review:architecture-reviewer	Bash	./node_modules/.bin/depcruise src --config .dependency-cruiser.cjs --output-type err
+0	architecture-review:architecture-reviewer	Bash	npm exec --no -- depcruise src
+0	architecture-review:architecture-reviewer	Bash	pnpm exec tsc --noEmit -p tsconfig.json
+0	architecture-review:architecture-reviewer	Bash	npx --no-install tsc --noEmit
+0	architecture-review:architecture-reviewer	Bash	pnpm typecheck
+0	architecture-review:architecture-reviewer	Bash	pnpm -C packages/api typecheck
+0	architecture-review:architecture-reviewer	Bash	pnpm --filter api run typecheck
+0	architecture-review:architecture-reviewer	Bash	npm run typecheck
+0	architecture-review:architecture-reviewer	Bash	npm run lint
+0	architecture-review:architecture-reviewer	Bash	yarn lint
+0	architecture-review:architecture-reviewer	Bash	pnpm run arch:check
+0	architecture-review:architecture-reviewer	Bash	npx --no-install eslint src/modules
+2	architecture-review:architecture-reviewer	Bash	npx depcruise src
+2	architecture-review:architecture-reviewer	Bash	npx tsc --noEmit
+2	architecture-review:architecture-reviewer	Bash	pnpm exec depcruise src --output-to graph.html
+2	architecture-review:architecture-reviewer	Bash	pnpm exec depcruise --init
+2	architecture-review:architecture-reviewer	Bash	pnpm exec tsc
+2	architecture-review:architecture-reviewer	Bash	pnpm exec tsc --noEmit --incremental
+2	architecture-review:architecture-reviewer	Bash	pnpm exec tsc -b --noEmit
+2	architecture-review:architecture-reviewer	Bash	pnpm lint:fix
+2	architecture-review:architecture-reviewer	Bash	pnpm run lint -- --fix
+2	architecture-review:architecture-reviewer	Bash	npx --no-install eslint --fix src
+2	architecture-review:architecture-reviewer	Bash	pnpm exec vitest run
+2	architecture-review:architecture-reviewer	Bash	pnpm test
+2	architecture-review:architecture-reviewer	Bash	pnpm build
+2	architecture-review:architecture-reviewer	Bash	pnpm install
+2	architecture-review:architecture-reviewer	Bash	npm ci
+2	architecture-review:architecture-reviewer	Bash	pnpm dlx depcruise src
+# --- anything else
+2	architecture-review:architecture-reviewer	Bash	rm -rf dist
+2	architecture-review:architecture-reviewer	Bash	mv a b
+2	architecture-review:architecture-reviewer	Bash	node -e "1"
+2	architecture-review:architecture-reviewer	Bash	python3 x.py
+2	architecture-review:architecture-reviewer	Bash	curl https://example.com
+2	architecture-review:architecture-reviewer	Bash	bash -c 'rm x'
+2	architecture-review:architecture-reviewer	Bash	bash -c 'git diff --stat' ; rm x
+2	architecture-review:architecture-reviewer	Bash	echo $(rm x)
+2	architecture-review:architecture-reviewer	Bash	cat src/app.ts | xargs rm
+2	architecture-review:architecture-reviewer	Bash	sudo ls
+2	architecture-review:architecture-reviewer	Bash	./scripts/check.sh
+# --- fail closed
+2	architecture-review:architecture-reviewer	Bash	echo 'unbalanced
+2	-	RAW	not json at all
+2	architecture-review:architecture-reviewer	RAW	{"agent_type":"architecture-review:architecture-reviewer","tool_name":"Bash","tool_input":{"command":42}}

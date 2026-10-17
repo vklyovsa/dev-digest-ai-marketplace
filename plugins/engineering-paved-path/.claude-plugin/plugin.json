@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "engineering-paved-path",
+  "version": "1.0.0",
+  "description": "Shared engineering skills for TypeScript web stacks: React, Next.js, React Testing Library, Fastify, Drizzle, PostgreSQL, Zod, TypeScript, onion and frontend architecture, security, Mermaid, plus a file-to-skill routing table.",
+  "author": { "name": "AI Engineering" },
+  "license": "MIT",
+  "keywords": ["skills", "react", "nextjs", "fastify", "drizzle", "postgresql", "zod", "typescript", "architecture", "security"],
+  "repository": "https://github.com/vklyovsa/dev-digest-ai-marketplace"
+}

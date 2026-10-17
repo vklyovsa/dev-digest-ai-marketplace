@@ -1,10 +1,32 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-marketplace.json",
   "name": "dev-digest-ai-marketplace",
-  "owner": {
-    "name": "AI Engineering",
-    "url": "https://github.com/vklyovsa"
-  },
+  "owner": { "name": "AI Engineering", "url": "https://github.com/vklyovsa" },
   "description": "Reusable Claude Code harness extracted from DevDigest: a Spec Driven Development workflow, a read-only researcher, an architecture reviewer and the engineering skills they share.",
-  "plugins": []
+  "plugins": [
+    {
+      "name": "engineering-paved-path",
+      "source": "./plugins/engineering-paved-path",
+      "description": "Shared engineering skills: React, Next.js, testing, Fastify, Drizzle, PostgreSQL, Zod, TypeScript, architecture, security, Mermaid.",
+      "category": "skills"
+    },
+    {
+      "name": "research-tools",
+      "source": "./plugins/research-tools",
+      "description": "A read-only researcher agent that answers one concrete question with evidence from the repository or official sources.",
+      "category": "agents"
+    },
+    {
+      "name": "architecture-review",
+      "source": "./plugins/architecture-review",
+      "description": "A read-only architecture reviewer that checks a diff against the repository's own architecture rules.",
+      "category": "agents"
+    },
+    {
+      "name": "sdd-engineering",
+      "source": "./plugins/sdd-engineering",
+      "description": "Spec Driven Development: spec -> plan -> implement -> verify -> review, with guards, a run-plan orchestrator and a workflow retrospective.",
+      "category": "workflow"
+    }
+  ]
 }

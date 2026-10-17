@@ -1,0 +1,35 @@
+schema_version: "1.1"
+name: spec-creator-clarifies
+description: A vague feature request gets clarifying questions, not invented requirements.
+tags: [sdd]
+runs: 2
+context:
+  scaffold_script: ../_scaffold/notes-api.sh
+execution:
+  max_turns: 40
+  timeout_seconds: 900
+  allowed_tools: [Agent, SendMessage, Read, Glob, Grep, Bash, Write, Edit]
+  prompt: |
+    Write a spec for this: notes should be shareable.
+graders:
+  - name: spec-creator-ran
+    type: tool_used
+    tool: Agent
+    input_match: 'sdd-engineering:spec-creator'
+  - name: asks-before-deciding
+    type: llm
+    focus: last_message
+    criteria: |
+      PASS if the final answer puts clarifying questions to the user about the decisions the
+      request leaves open (for example: share with whom — public link or named users; read-only
+      or editable; expiry or revocation; authentication), and does not present those decisions
+      as already made. FAIL if it presents a finished spec that silently picked answers to them.
+  - name: no-invented-spec
+    type: llm
+    focus: files
+    criteria: |
+      PASS if either no spec file was written, or every spec file written under specs/ has
+      Status: draft and marks the open decisions with [NEEDS CLARIFICATION] (or an equivalent
+      open-question marker) instead of resolving them. FAIL if a written spec is approved or
+      resolves the open decisions without a question. Also FAIL if any file outside specs/
+      was written.

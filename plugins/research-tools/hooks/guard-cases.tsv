@@ -1,0 +1,137 @@
+expected_exit	agent_type	tool_name	input
+# --- other agents and the main session pass untouched
+0	-	Bash	rm -rf build
+0	-	Write	notes.md
+0	research-tools:other	Bash	rm -rf build
+0	researcher	Bash	rm -rf build
+0	other-plugin:some-agent	Bash	git commit -m x
+# --- non-Bash, non-write tools pass
+0	research-tools:researcher	Read	src/index.ts
+0	research-tools:researcher	WebFetch	https://example.com
+# --- write tools are blocked
+2	research-tools:researcher	Write	notes.md
+2	research-tools:researcher	Edit	src/index.ts
+2	research-tools:researcher	MultiEdit	src/index.ts
+2	research-tools:researcher	NotebookEdit	analysis.ipynb
+# --- read-only Bash passes
+0	research-tools:researcher	Bash	git log --oneline -20 -- src/
+0	research-tools:researcher	Bash	git -C sub show HEAD~1:package.json
+0	research-tools:researcher	Bash	git blame -L 10,40 src/app.ts
+0	research-tools:researcher	Bash	git log -S'parseConfig' --oneline | head -5
+0	research-tools:researcher	Bash	git branch -a
+0	research-tools:researcher	Bash	git branch --contains abc123
+0	research-tools:researcher	Bash	git remote -v
+0	research-tools:researcher	Bash	git stash list
+0	research-tools:researcher	Bash	git config --get remote.origin.url
+0	research-tools:researcher	Bash	grep -rn "=>" src | wc -l
+0	research-tools:researcher	Bash	grep -n 'a > b' src/x.ts
+0	research-tools:researcher	Bash	ls -la 2>/dev/null
+0	research-tools:researcher	Bash	cat package.json | jq '.dependencies'
+0	research-tools:researcher	Bash	find src -name '*.ts' -newer package.json
+0	research-tools:researcher	Bash	sed -n '1,40p' src/app.ts
+0	research-tools:researcher	Bash	sed -n 's/x/y/p' src/app.ts
+0	research-tools:researcher	Bash	cd server && git diff HEAD~3 --stat
+0	research-tools:researcher	Bash	pnpm why zod
+0	research-tools:researcher	Bash	pnpm -C server ls --depth 0
+0	research-tools:researcher	Bash	npm ls react
+0	research-tools:researcher	Bash	npm view fastify version
+0	research-tools:researcher	Bash	echo "$(git rev-parse --short HEAD)"
+0	research-tools:researcher	Bash	git log --format='%h %s' 2>&1 | head
+0	research-tools:researcher	Bash	wc -l < src/app.ts
+0	research-tools:researcher	Bash	node --version
+0	research-tools:researcher	Bash	curl -sSL https://registry.npmjs.org/zod
+0	research-tools:researcher	Bash	gh pr view 12 --json title
+0	research-tools:researcher	Bash	gh api repos/o/r/pulls
+0	research-tools:researcher	Bash	awk '$3 > 5 { print $1 }' data.txt
+0	research-tools:researcher	Bash	command -v jq
+0	research-tools:researcher	Bash	cat <<'EOF'\nhello > world\nEOF
+0	research-tools:researcher	Bash	git diff main...HEAD -- src | grep '^+' >&2
+# --- redirects into files
+2	research-tools:researcher	Bash	echo hi > notes.txt
+2	research-tools:researcher	Bash	git log >> history.txt
+2	research-tools:researcher	Bash	ls 2> err.log
+2	research-tools:researcher	Bash	ls &> all.log
+2	research-tools:researcher	Bash	ls >| forced.txt
+2	research-tools:researcher	Bash	cat <<EOF > out.txt\nx\nEOF
+2	research-tools:researcher	Bash	echo x 1>out.txt
+2	research-tools:researcher	Bash	ls >& out.txt
+# --- deleting, moving, copying, editing
+2	research-tools:researcher	Bash	rm -rf node_modules
+2	research-tools:researcher	Bash	/bin/rm file
+2	research-tools:researcher	Bash	mv a.ts b.ts
+2	research-tools:researcher	Bash	cp a.ts b.ts
+2	research-tools:researcher	Bash	touch x
+2	research-tools:researcher	Bash	mkdir -p tmp/x
+2	research-tools:researcher	Bash	ls | tee out.txt
+2	research-tools:researcher	Bash	sed -i 's/a/b/' src/app.ts
+2	research-tools:researcher	Bash	sed -i.bak 's/a/b/' src/app.ts
+2	research-tools:researcher	Bash	sed -Ei 's/a/b/' src/app.ts
+2	research-tools:researcher	Bash	sed --in-place 's/a/b/' src/app.ts
+2	research-tools:researcher	Bash	find . -name '*.log' -delete
+2	research-tools:researcher	Bash	find . -name '*.ts' -exec rm {} \;
+2	research-tools:researcher	Bash	sort -o sorted.txt list.txt
+2	research-tools:researcher	Bash	awk '{ print > "out.txt" }' in.txt
+2	research-tools:researcher	Bash	dd if=/dev/zero of=x bs=1 count=1
+2	research-tools:researcher	Bash	tar -xzf archive.tgz
+2	research-tools:researcher	Bash	ls; rm x
+2	research-tools:researcher	Bash	ls && rm x
+2	research-tools:researcher	Bash	ls || rm x
+2	research-tools:researcher	Bash	echo $(rm x)
+2	research-tools:researcher	Bash	echo "`rm x`"
+2	research-tools:researcher	Bash	bash -c 'rm -rf build'
+2	research-tools:researcher	Bash	sh -lc "echo hi > f"
+2	research-tools:researcher	Bash	find . -name '*.tmp' | xargs rm
+2	research-tools:researcher	Bash	env FOO=1 rm x
+2	research-tools:researcher	Bash	timeout 5 rm x
+2	research-tools:researcher	Bash	sudo ls
+2	research-tools:researcher	Bash	eval "rm x"
+2	research-tools:researcher	Bash	bash ./scripts/cleanup.sh
+2	research-tools:researcher	Bash	diff <(ls) >(tee out.txt)
+# --- interpreters run arbitrary code
+2	research-tools:researcher	Bash	node -e "require('fs').writeFileSync('x','y')"
+2	research-tools:researcher	Bash	python3 -c 'open("x","w")'
+2	research-tools:researcher	Bash	perl -pi -e 's/a/b/' f
+# --- git state changes
+2	research-tools:researcher	Bash	git commit -m wip
+2	research-tools:researcher	Bash	git add .
+2	research-tools:researcher	Bash	git push origin main
+2	research-tools:researcher	Bash	git checkout -- src/app.ts
+2	research-tools:researcher	Bash	git switch main
+2	research-tools:researcher	Bash	git reset --hard
+2	research-tools:researcher	Bash	git stash
+2	research-tools:researcher	Bash	git stash push -m x
+2	research-tools:researcher	Bash	git branch feature/x
+2	research-tools:researcher	Bash	git branch -D old
+2	research-tools:researcher	Bash	git tag v1.0.0
+2	research-tools:researcher	Bash	git fetch origin
+2	research-tools:researcher	Bash	git pull
+2	research-tools:researcher	Bash	git clean -fdx
+2	research-tools:researcher	Bash	git restore src
+2	research-tools:researcher	Bash	git rebase main
+2	research-tools:researcher	Bash	git config user.name x
+2	research-tools:researcher	Bash	git diff --output=patch.diff
+2	research-tools:researcher	Bash	git -c core.pager='rm -rf .' log
+2	research-tools:researcher	Bash	git -c alias.x='!rm f' x
+# --- package installs and runners
+2	research-tools:researcher	Bash	npm install lodash
+2	research-tools:researcher	Bash	npm i
+2	research-tools:researcher	Bash	pnpm add zod
+2	research-tools:researcher	Bash	pnpm install
+2	research-tools:researcher	Bash	yarn add react
+2	research-tools:researcher	Bash	npx some-tool
+2	research-tools:researcher	Bash	pip install requests
+2	research-tools:researcher	Bash	brew install jq
+2	research-tools:researcher	Bash	apt-get install -y curl
+2	research-tools:researcher	Bash	pnpm run build
+# --- network writes
+2	research-tools:researcher	Bash	curl -o out.html https://example.com
+2	research-tools:researcher	Bash	curl -X POST https://example.com/api
+2	research-tools:researcher	Bash	curl -d 'a=1' https://example.com
+2	research-tools:researcher	Bash	wget https://example.com/file
+2	research-tools:researcher	Bash	gh pr create --title x
+2	research-tools:researcher	Bash	gh api -X POST repos/o/r/issues
+# --- fail closed
+2	research-tools:researcher	Bash	echo 'unbalanced
+2	research-tools:researcher	Bash	echo $(ls
+2	-	RAW	{not json
+2	research-tools:researcher	RAW	{"agent_type":"research-tools:researcher","tool_name":"Bash","tool_input":{}}

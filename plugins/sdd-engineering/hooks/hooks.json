@@ -1,0 +1,17 @@
+{
+  "description": "Scopes the sdd-engineering agents: read-only planner and verifier, spec-creator writes draft specs only, implementer keeps away from git state, lockfiles, secrets, protected paths and destructive database commands.",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash|Edit|MultiEdit|Write|NotebookEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/agent-guard.mjs\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}

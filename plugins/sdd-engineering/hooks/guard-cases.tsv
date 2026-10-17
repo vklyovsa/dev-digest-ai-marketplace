@@ -1,0 +1,163 @@
+# agent	project	tool	input	expected_exit
+# agent: a short name is prefixed with "sdd-engineering:"; "main" sends no agent_type; a name with ":" is sent as is.
+# project: "default" has no profile; "profiled" has .claude/sdd-profile.md (specs_dir docs/specs, packages api and web,
+# check_command "make check PKG={package}", protected_paths infra/** and *.generated.ts). Fixture files: see check-guards.mjs.
+# {root} is the fixture project, {plugin} the plugin root.
+# --- other callers pass untouched
+main	default	Bash	git commit -m x	0
+main	default	Write	{root}/pnpm-lock.yaml	0
+research-tools:researcher	default	Bash	rm -rf x	0
+sdd-engineering:unknown-agent	default	Bash	git push	0
+# --- implementer: allowed
+implementer	default	Bash	cd api && npm run typecheck	0
+implementer	default	Bash	git status --short	0
+implementer	default	Bash	git diff --stat	0
+implementer	default	Bash	pnpm add zod	0
+implementer	default	Bash	npx drizzle-kit generate	0
+implementer	default	Bash	npx prisma migrate dev --create-only --name x	0
+implementer	default	Bash	DATABASE_URL=postgres://u:p@127.0.0.1:1/x npx vitest run	0
+implementer	profiled	Bash	make check PKG=api	0
+implementer	default	Write	{root}/src/feature.ts	0
+implementer	default	Edit	{root}/src/app.ts	0
+implementer	default	Edit	src/app.ts	0
+implementer	default	Write	{root}/.env.example	0
+implementer	default	Write	{root}/migrations/0002_new.sql	0
+implementer	default	Write	{root}/.claude/agents/new-agent.md	0
+implementer	profiled	Write	{root}/api/src/x.ts	0
+# --- implementer: blocked commands
+implementer	default	Bash	git commit -m x	2
+implementer	default	Bash	git -C api push	2
+implementer	default	Bash	git stash	2
+implementer	default	Bash	git checkout -- src/app.ts	2
+implementer	default	Bash	git reset --hard	2
+implementer	default	Bash	git branch -D feature/x	2
+implementer	default	Bash	gh pr create --fill	2
+implementer	default	Bash	echo ok && git push origin HEAD	2
+implementer	default	Bash	npm run db:migrate	2
+implementer	default	Bash	cd api && pnpm db:seed	2
+implementer	default	Bash	npx drizzle-kit push	2
+implementer	default	Bash	npx prisma migrate deploy	2
+implementer	default	Bash	php artisan migrate	2
+implementer	default	Bash	bundle exec rails db:migrate	2
+implementer	default	Bash	python manage.py migrate	2
+implementer	default	Bash	docker compose down -v	2
+implementer	default	Bash	docker volume prune -f	2
+implementer	default	Bash	docker exec db psql -c "drop table users"	2
+implementer	default	Bash	dropdb app	2
+# --- implementer: blocked paths
+implementer	default	Edit	{root}/pnpm-lock.yaml	2
+implementer	default	Write	{root}/api/package-lock.json	2
+implementer	default	Edit	{root}/yarn.lock	2
+implementer	default	Edit	{root}/Cargo.lock	2
+implementer	default	Write	{root}/.env	2
+implementer	default	Write	{root}/api/.env.local	2
+implementer	default	Edit	{root}/migrations/0001_init.sql	2
+implementer	default	Edit	{root}/.claude/settings.json	2
+implementer	default	Edit	{root}/.claude/settings.local.json	2
+implementer	default	Edit	{root}/.claude/sdd-profile.md	2
+implementer	default	Write	/etc/hosts	2
+implementer	default	Write	../outside.md	2
+implementer	default	Edit	{plugin}/agents/implementer.md	2
+implementer	default	Edit	{plugin}/hooks/agent-guard.mjs	2
+implementer	profiled	Write	{root}/infra/main.tf	2
+implementer	profiled	Edit	{root}/web/src/api.generated.ts	2
+# --- implementation-planner: read-only
+implementation-planner	default	Bash	git log --oneline -5	0
+implementation-planner	default	Bash	git --no-pager diff --stat	0
+implementation-planner	default	Bash	git branch --show-current	0
+implementation-planner	default	Bash	git remote -v	0
+implementation-planner	default	Bash	grep -rnE "a|b" src | head -20	0
+implementation-planner	default	Bash	sed -n '1,40p' src/app.ts	0
+implementation-planner	default	Bash	find src -name '*.ts' -newer package.json	0
+implementation-planner	default	Bash	for f in a b; do test -e "$f" || echo "missing $f"; done	0
+implementation-planner	default	Bash	git diff --name-only 2>&1 | sort | uniq	0
+implementation-planner	default	Bash	npm run typecheck	0
+implementation-planner	default	Bash	npx tsc --noEmit -p tsconfig.json	0
+implementation-planner	default	Bash	node {plugin}/scripts/check-spec.mjs specs/2026-10-01-draft-feature.md	0
+implementation-planner	default	Bash	node "{plugin}/scripts/check-spec.mjs" --for-approval specs/2026-10-01-draft-feature.md	0
+implementation-planner	default	Bash	node "${CLAUDE_PLUGIN_ROOT}/scripts/check-spec.mjs" --next-id	0
+implementation-planner	default	Bash	git stash	2
+implementation-planner	default	Bash	git commit -m x	2
+implementation-planner	default	Bash	git checkout -- file.ts	2
+implementation-planner	default	Bash	git fetch origin	2
+implementation-planner	default	Bash	git branch feature/x	2
+implementation-planner	default	Bash	git diff --output=patch.diff	2
+implementation-planner	default	Bash	npm test	2
+implementation-planner	default	Bash	npx vitest run	2
+implementation-planner	default	Bash	pytest -q	2
+implementation-planner	profiled	Bash	make check PKG=api	2
+implementation-planner	default	Bash	npm run lint -- --fix	2
+implementation-planner	default	Bash	pnpm add zod	2
+implementation-planner	default	Bash	cat a > b	2
+implementation-planner	default	Bash	echo x >> INSIGHTS.md	2
+implementation-planner	default	Bash	tee x	2
+implementation-planner	default	Bash	rm -rf x	2
+implementation-planner	default	Bash	sed -i 's/a/b/' file.ts	2
+implementation-planner	default	Bash	find . -name '*.tmp' -delete	2
+implementation-planner	default	Bash	sort -o out.txt in.txt	2
+implementation-planner	default	Bash	echo "$(rm -rf x)"	2
+implementation-planner	default	Bash	echo "it's" ; rm x ; echo 'y'	2
+implementation-planner	default	Bash	echo "unterminated ; rm x	2
+implementation-planner	default	Bash	bash -c 'rm x'	2
+implementation-planner	default	Bash	node -e 'require("fs").writeFileSync("x","")'	2
+implementation-planner	default	Bash	node scripts/check-spec.mjs specs/x.md	2
+implementation-planner	default	Bash	node {plugin}/scripts/check-spec.mjs specs/x.md > report.txt	2
+implementation-planner	default	Bash	xargs rm < list.txt	2
+implementation-planner	default	Bash	awk '{print $1}' src/app.ts	2
+implementation-planner	default	Write	{root}/src/app.ts	2
+implementation-planner	default	Edit	{root}/specs/2026-10-01-draft-feature.md	2
+implementation-planner	default	MultiEdit	{root}/src/app.ts	2
+implementation-planner	default	NotebookEdit	{root}/x.ipynb	2
+# --- plan-verifier: read-only, may run tests and the check command
+plan-verifier	default	Bash	git diff --name-only HEAD~1	0
+plan-verifier	default	Bash	git ls-files --others --exclude-standard	0
+plan-verifier	default	Bash	npm test	0
+plan-verifier	default	Bash	cd web && pnpm exec vitest run src/x.test.ts	0
+plan-verifier	default	Bash	pytest tests/test_x.py	0
+plan-verifier	default	Bash	go test ./...	0
+plan-verifier	default	Bash	DATABASE_URL=postgres://u:p@127.0.0.1:1/x npx vitest run	0
+plan-verifier	profiled	Bash	make check PKG=web	0
+plan-verifier	profiled	Bash	make check PKG=web > out.txt	2
+plan-verifier	default	Bash	npx vitest run -u	2
+plan-verifier	default	Bash	npx jest --watch	2
+plan-verifier	default	Bash	npx vitest	2
+plan-verifier	default	Bash	git stash	2
+plan-verifier	default	Bash	pnpm install	2
+plan-verifier	default	Write	{root}/src/app.ts	2
+plan-verifier	default	Edit	{root}/src/app.ts	2
+# --- spec-creator: dated draft specs in the spec folders, Bash read-only
+spec-creator	default	Write	{root}/specs/2026-10-04-new-feature.md	0
+spec-creator	default	Edit	{root}/specs/2026-10-01-draft-feature.md	0
+spec-creator	default	Edit	{root}/specs/README.md	0
+spec-creator	profiled	Write	{root}/docs/specs/2026-10-04-new-feature.md	0
+spec-creator	profiled	Write	{root}/api/docs/specs/2026-10-04-new-feature.md	0
+spec-creator	profiled	Edit	{root}/docs/specs/2026-10-01-draft.md	0
+spec-creator	default	Bash	node {plugin}/scripts/check-spec.mjs specs/2026-10-04-new-feature.md	0
+spec-creator	default	Bash	node "{plugin}/scripts/check-spec.mjs" --next-id	0
+spec-creator	default	Bash	date +%F	0
+spec-creator	default	Bash	git rev-parse --short HEAD	0
+spec-creator	default	Bash	git status --short	0
+spec-creator	default	Bash	grep -rn "Spec ID" specs | wc -l	0
+spec-creator	default	Bash	ls specs	0
+spec-creator	default	Edit	{root}/specs/2026-10-02-approved-feature.md	2
+spec-creator	default	Write	{root}/specs/2026-10-02-approved-feature.md	2
+spec-creator	default	Write	{root}/specs/blast-radius.md	2
+spec-creator	default	Write	{root}/specs/TEMPLATE.md	2
+spec-creator	default	Write	{root}/specs/2026-10-04-new-feature-plan.md	2
+spec-creator	default	Write	{root}/specs/fixtures/2026-10-04-x.md	2
+spec-creator	default	Write	{root}/docs/2026-10-04-x.md	2
+spec-creator	default	Write	{root}/src/app.ts	2
+spec-creator	default	Edit	{root}/INSIGHTS.md	2
+spec-creator	default	Edit	{root}/CLAUDE.md	2
+spec-creator	default	Write	/tmp/2026-10-04-x.md	2
+spec-creator	default	NotebookEdit	{root}/specs/x.ipynb	2
+spec-creator	profiled	Write	{root}/specs/2026-10-04-new-feature.md	2
+spec-creator	profiled	Write	{root}/other/docs/specs/2026-10-04-x.md	2
+spec-creator	default	Bash	curl -s https://example.com	2
+spec-creator	default	Bash	rm specs/2026-10-02-approved-feature.md	2
+spec-creator	default	Bash	echo x > specs/2026-10-04-x.md	2
+spec-creator	default	Bash	git commit -am x	2
+spec-creator	default	Bash	npm test	2
+spec-creator	profiled	Bash	make check PKG=api	2
+spec-creator	default	Bash	node -e 'require("fs").writeFileSync("x","")'	2
+spec-creator	default	Bash	echo "it's" ; rm specs/README.md ; echo 'y'	2
