@@ -1,0 +1,13 @@
+{
+  "name": "dev-digest-ai-marketplace",
+  "private": true,
+  "type": "module",
+  "repository": "github:vklyovsa/dev-digest-ai-marketplace",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build:index": "node scripts/build-index.mjs",
+    "validate": "node scripts/validate.mjs"
+  }
+}
