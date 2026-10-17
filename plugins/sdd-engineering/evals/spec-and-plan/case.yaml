@@ -6,9 +6,10 @@ description: >
   it on the user's standing instruction, implementation-planner plans from it, nothing is
   implemented.
 tags: [baseline, sdd]
+plugins: [../../../engineering-paved-path, ../../../research-tools, ../../../architecture-review, ../..]
 runs: 3
 context:
-  scaffold_script: ../_scaffold/notes-api.sh
+  scaffold_script: scaffold.sh
 execution:
   max_turns: 80
   timeout_seconds: 1800
@@ -36,6 +37,7 @@ graders:
     type: tool_used
     tool: Agent
     input_match: 'sdd-engineering:implementer'
+    min: 0
     max: 0
   - name: spec-file
     type: file_exists
@@ -71,4 +73,5 @@ graders:
     focus: trace
     criteria: |
       PASS if no file under src/ or test/ was created or modified during the run (only files
-      under specs/ were written). FAIL if any source or test file was edited.
+      under specs/ were written; ignore .git/, which the eval harness
+      writes). FAIL if any source or test file was edited.

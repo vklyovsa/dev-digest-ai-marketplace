@@ -1,6 +1,7 @@
 ---
 description: A Zod schema task loads the paved-path zod skill.
 tags: [smoke]
+plugins: [../..]
 runs: 1
 max_turns: 6
 allowed_tools: [Skill, Read, Glob, Grep]

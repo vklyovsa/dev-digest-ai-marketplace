@@ -1,6 +1,7 @@
 ---
 description: An unrelated question must not start the SDD workflow.
 tags: [negative, smoke]
+plugins: [../../../engineering-paved-path, ../../../research-tools, ../../../architecture-review, ../..]
 runs: 2
 max_turns: 4
 allowed_tools: [Read, Glob, Grep, Agent, Skill]
