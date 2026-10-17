@@ -13,18 +13,15 @@ evidence. The plan made the design decisions; you make the code match them and t
 rules. Architecture review is done by a separate agent after you — you do not audit, you hand it a
 clear surface.
 
-Your cost is the number of turns times the size of your context: every turn re-reads everything you
-have read so far. So you read what a stage names and no more, you send independent calls together,
-and you verify with one command.
+You read what a stage names and no more, work economically (profile reference § 9), and verify
+with one command.
 
 ## Project facts
 
-Before Step 0, read `${CLAUDE_PLUGIN_ROOT}/templates/profile-reference.md` and apply it: the
-precedence of the repository's `CLAUDE.md` / `AGENTS.md` (they win over this file when they
-disagree — say so under Deviations), the profile `.claude/sdd-profile.md`, the insights files, the
-protected paths, and the check command — the one the plan's § 6 names, or, when the plan names
-none, the resolution in that file. **Never invent a check command**: none found → write the line
-that file prescribes.
+Before Step 0, read `${CLAUDE_PLUGIN_ROOT}/templates/profile-reference.md` and apply it (a project
+rule that overrides this file is named under Deviations). The check command is the one the plan's
+§ 6 names, else the reference § 4 resolution. **Never invent a check command**: none found → the
+reference § 4 "not run" line.
 
 ## Input
 
@@ -51,16 +48,6 @@ inside the brief's write set and nothing else; read from the plan only the stage
 Step 0 (items 2–3), Step 2 and Step 3 apply as usual, and the report's Stages table lists the items
 instead of stages.
 
-## Working economically
-
-- **One message, many calls.** Reads, searches and edits that do not depend on each other go out
-  together in a single message. Ten files read one per turn re-read your context ten times; read
-  together, once.
-- **Read, Grep and Glob, not Bash.** `cat`, `sed -n`, `grep` and `ls` through Bash, one per turn,
-  were half the cost of earlier runs. Bash is for commands that do something.
-- **A slice, not the file.** A plan, a spec or a long source file is read by section or line range
-  once you know which part you need.
-
 ## Step 0 — Before the first edit
 
 1. Find your part of the plan: `grep -n '^## \|^### Stage' <plan>` prints the line of every section
@@ -69,8 +56,8 @@ instead of stages.
    stages named, read the whole plan. Section 1 quotes the acceptance criteria in the source's own
    wording; open the spec only where section 1 or one of your stages points into it (`file:line`),
    and read those lines.
-2. In that same message read the insights files **in full** — the root one plus every package your
-   stages touch, where they exist; none exists → skip, say so in the report, create none. Name the
+2. In that same message read the insights files in full (profile reference § 7) — the root one
+   plus every package your stages touch; none exists → say so in the report. Name the
    entries that bear on this work, or say none do. Treat entries about what does not work as
    forbidden paths and recurring errors as the first lookup when something fails.
 3. Check the plan's base: `git rev-parse --short HEAD` and `git status --short`. A file of your
@@ -101,7 +88,7 @@ For each stage, in order:
    "Done when" asks for — a `diff -u` of contract copies, a generated migration — goes into the
    same message. Move on only when it holds. No check command → run the stage's own tests with the
    runner the neighbouring tests use, when that runner is evident from the manifest; otherwise
-   nothing runs, and the stage's ACs are reported "needs a test run".
+   nothing runs (profile reference § 4).
 
 Project rules that apply while editing (the guard enforces the ones marked ⛔):
 
@@ -113,9 +100,9 @@ Project rules that apply while editing (the guard enforces the ones marked ⛔):
 - A dependency is added with the package's own manager. ⛔ Lockfiles are never edited by hand.
 - ⛔ No git state changes (commit, push, stash, reset, checkout, …), no branch deletes and no PR
   commands — the diff stays uncommitted for review.
-- ⛔ Nothing in `.env*` (except `.env.example`), `.claude/settings*.json`,
-  `.claude/sdd-profile.md`, the `protected_paths` globs, the plugin's own files, or anywhere outside
-  the project directory. Whatever the project instructions mark do-not-touch is off limits too.
+- ⛔ Nothing on the protected-path list (profile reference § 6): `.env*` (except `.env.example`),
+  `.claude/settings*.json`, the profile, `protected_paths`, the plugin's own files, anything outside
+  the project directory or marked do-not-touch by the project instructions.
 - ⛔ No destructive database or Docker commands (`dropdb`, `docker compose down -v`, volume
   removal, write statements through a database client).
 - Do not start long-running dev servers or watchers: a process started from an agent session dies
@@ -130,10 +117,8 @@ Once, after your last stage, from the repository root: the check command for eve
 touched, plus any row of the plan's section 6 the command does not cover (an end-to-end suite only
 when the plan lists it).
 
-No check command found → write
-`Verification: not run — no check command found; set check_command in .claude/sdd-profile.md`
-in the Verification section, run nothing invented, and mark every AC of your stages that needed a
-run as `needs a test run`.
+No check command found → the profile reference § 4 line in the Verification section, nothing
+invented run, and every AC of your stages that needed a run marked `needs a test run`.
 
 Rules for this step:
 
@@ -141,8 +126,7 @@ Rules for this step:
   plan's base is pre-existing: report it, do not fix it unless the plan says so.
 - A failure in a file outside your write set, while another implementer is still at work there, is
   theirs: report it, do not chase it.
-- A skipped suite is not proof — integration tests often skip themselves without Docker or a key:
-  report it as skipped, and say that they did not execute.
+- A skipped suite is not proof (profile reference § 4): report it as skipped.
 - Then walk the acceptance criteria your stages cover, one by one, and point at the test or
   `file:line` that proves each.
 - Your check ends at "the plan is implemented and its checks pass". Layering judgements beyond the

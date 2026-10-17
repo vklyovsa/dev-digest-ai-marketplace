@@ -61,14 +61,10 @@ Typical session:
 
 ## Where files are written
 
-| File | Path | Written by |
-|---|---|---|
-| Spec | `<specs_dir>/<YYYY-MM-DD>-<feature-slug>.md` (`Status: draft`); with `packages` set, a one-package feature goes to `<package>/<specs_dir>/` | `spec-creator` |
-| Spec approval | the spec's `Status:` line → `approved` | the calling session, after your explicit approval |
-| Plan | `<specs_dir>/<YYYY-MM-DD>-<feature-slug>-plan.md` | the calling session, from the planner's output, after your approval |
-| Code and tests | the plan's write sets | `implementer` |
-| Insights | the insights files that already exist | `engineering-insights` |
-| Retro entry | `<retro_dir>/<YYYY-MM-DD>-<run-slug>.md` | `/sdd-engineering:workflow-retro` |
+Specs in `<specs_dir>/` (`Status: draft` from `spec-creator`; approval is yours), plans beside
+them with `-plan` before `.md`, code and tests inside the plan's write sets. The full table:
+[`templates/profile-reference.md`](templates/profile-reference.md) § 5; the plan's shape:
+[`templates/plan-format.md`](templates/plan-format.md).
 
 ## The project profile
 
@@ -77,28 +73,16 @@ Optional: `.claude/sdd-profile.md` in your repository, a markdown file with one 
 full rules are in [`templates/profile-reference.md`](templates/profile-reference.md), which every
 agent reads.
 
-| Key | Default |
-|---|---|
-| `specs_dir` | `specs` |
-| `spec_template` | `<specs_dir>/TEMPLATE.md` if it exists, else [`templates/spec-template.md`](templates/spec-template.md) |
-| `check_command` | discovered: project instructions, then `package.json` scripts, `Makefile` / `justfile`, `pyproject.toml`, `go.mod`, `Cargo.toml`; may contain `{package}` |
-| `packages` | none (one package) |
-| `insights_files` | `INSIGHTS.md` (+ `<package>/INSIGHTS.md` where present) |
-| `architecture_docs` | discovered from project instructions; none is fine |
-| `skill_routing` | `engineering-paved-path:skill-routing` |
-| `protected_paths` | none, on top of the built-in list (lockfiles, `.env*` except `.env.example`, existing migrations, `.claude/settings*.json`, the profile) |
-| `retro_dir` | `docs/retro/ledger` |
+Keys: `specs_dir`, `spec_template`, `check_command`, `packages`, `insights_files`,
+`architecture_docs`, `skill_routing`, `protected_paths`, `retro_dir` — meanings and defaults in
+[`templates/profile-reference.md`](templates/profile-reference.md) § 2.
 
 Without a profile the agents discover what they need from `CLAUDE.md`, `AGENTS.md` (root and per
 package), manifests and scripts. **Your `CLAUDE.md` / `AGENTS.md` win over the plugin** whenever
 they disagree, and the agents say which rule they followed.
 
-### When no check command exists
-
-No agent invents one. The planner, the implementer and the verifier report
-`Verification: not run — no check command found; set check_command in .claude/sdd-profile.md`,
-mark the acceptance criteria that needed a run as "needs a test run", and `run-plan` puts that in
-its report instead of looping over a check that cannot run.
+No agent invents a check command: without one, verification is reported as not run and the
+criteria that needed it as "needs a test run" (profile reference § 4).
 
 ## Guards
 

@@ -9,14 +9,13 @@ argument-hint: "<plan or spec path> [design paths…] [notes for this run]"
 
 You are the calling session of the Spec Driven Development pipeline, from the approved plan
 onwards. You orchestrate and the agents work: you write no code, you do not read the diff or the
-source files, and you do not repeat a check that an agent's report already carries. Every turn of
-yours re-reads your whole context, so independent calls go out in one message.
+source files, and you do not repeat a check that an agent's report already carries. Work
+economically (profile reference § 9).
 
 Arguments: $ARGUMENTS
 
-Project facts — the profile, `specs_dir`, the check command and what to do when none exists — come
-from `${CLAUDE_PLUGIN_ROOT}/templates/profile-reference.md`. Read it once in step 0. The
-repository's `CLAUDE.md` / `AGENTS.md` win over this skill when they disagree.
+Project facts come from `${CLAUDE_PLUGIN_ROOT}/templates/profile-reference.md`, read once in
+step 0 and applied (§ 1: the repository's instructions win over this skill).
 
 ## Not in this skill
 
@@ -38,10 +37,9 @@ repository's `CLAUDE.md` / `AGENTS.md` win over this skill when they disagree.
    `git rev-parse --short HEAD`, `git status --short`. Then read the plan's header, §6, §7 and §9 —
    not the stages, they are the implementers'. A plan written before §9 carried briefs: cut its
    stages into briefs of one or two, in order, one track.
-3. Resolve the check command: the plan's §6, else the profile reference § 4. None found → keep the
-   line `Verification: not run — no check command found; set check_command in
-   .claude/sdd-profile.md` for the report, and skip step 2 and every "check" step of a fix round —
-   never invent a command, never loop over a check that cannot run.
+3. Resolve the check command: the plan's §6, else the profile reference § 4. None found → keep
+   that section's "not run" line for the report, and skip step 2 and every "check" step of a fix
+   round — never invent a command, never loop over a check that cannot run.
 4. Stop and say what is missing when:
    - there is no plan file → "run `sdd-engineering:implementation-planner` on the approved spec
      first";
@@ -141,8 +139,8 @@ Used by steps 2, 3 and 4.
 In the user's language, short:
 
 - the plan, the mode, the briefs that ran;
-- the final check lines, as printed — or `Verification: not run — no check command found; set
-  check_command in .claude/sdd-profile.md`, with the criteria that therefore need a test run;
+- the final check lines, as printed — or the § 4 "not run" line, with the criteria that therefore
+  need a test run;
 - `plan-verifier`: its counts, and what is still not done;
 - the review: findings fixed per round, what stays open (SUGGESTIONs, items the user accepted), how
   many rounds it took;

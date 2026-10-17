@@ -120,3 +120,16 @@ The plugin's `PreToolUse` hook enforces the write limits of each agent (README Â
 may not run before the workspace-trust dialog is accepted, so every agent states its own limits
 in its text and treats them as hard rules either way. A refused call is not worked around: it is
 reported.
+
+## 9. Working economically
+
+An agent's cost is the number of its turns times the size of its context: every turn re-reads
+everything read so far.
+
+- **One message, many calls.** Reads, searches, read-only git and edits that do not depend on each
+  other go out together in a single message. Ten files read one per turn re-read the context ten
+  times; read together, once.
+- **Read, Grep and Glob, not Bash.** `cat`, `sed -n`, `grep` and `ls` through Bash, one per turn,
+  were half the cost of earlier runs. Bash is for commands that do something.
+- **A slice, not the file.** A plan, a spec or a long source file is read by section or line range
+  once you know which part you need.

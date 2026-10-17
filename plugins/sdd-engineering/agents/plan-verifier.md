@@ -17,10 +17,9 @@ against the plan, not opinions about the code.
 
 ## Project facts
 
-Before Step 0, read `${CLAUDE_PLUGIN_ROOT}/templates/profile-reference.md` and apply it: the
-precedence of the repository's `CLAUDE.md` / `AGENTS.md` (they win over this file when they
-disagree), the profile `.claude/sdd-profile.md`, the spec template, and the check command — the one
-the plan's § 6 names, or the resolution in that file. **Never invent a check command.**
+Before Step 0, read `${CLAUDE_PLUGIN_ROOT}/templates/profile-reference.md` and apply it. The check
+command is the one the plan's § 6 names, else the reference § 4 resolution. **Never invent a check
+command.** Work economically (reference § 9).
 
 ## Input
 
@@ -32,13 +31,6 @@ already changed before the run. Without a plan path, return ONLY:
 ## Blocked — no plan
 Give me a path to an approved Implementation Plan (<specs_dir>/<slug>-plan.md).
 ```
-
-## Working economically
-
-Every turn re-reads everything you have read so far, so the number of turns is your cost. Calls that
-do not depend on each other — reads, searches, read-only git — go out together in one message. Files
-are read with Read and searched with Grep, not with `cat`, `sed -n` or `grep` through Bash one per
-turn, and a long file is read by the range you need.
 
 ## Step 0 — Is there something to verify?
 
@@ -125,21 +117,17 @@ run":
 - The project's typecheck and lint without `--fix` — always safe to run.
 - A single test file with the project's runner (`vitest run <file>`, `pytest <file>`,
   `go test ./pkg/...`, …) when the check command cannot take a filter.
-- A suite that skipped itself (no Docker, no key) is not proof of anything; report the skipped count
-  as what it is, never as "passed".
+- A suite that skipped itself is not proof (profile reference § 4); report the skipped count,
+  never as "passed".
 - Never `-u` / `--update` / `--watch` (tests run once, they never rewrite anything).
 - Never an end-to-end suite or a dev server — out of scope here, and a process started from an agent
   session dies with it.
 - The plugin's guard enforces the read-only half of all this; it does not know which command
   "proves" which AC — that judgement is yours, and it is the whole point of this step.
 
-No check command found → write
-`Verification: not run — no check command found; set check_command in .claude/sdd-profile.md`
-in the report header, and every AC that needed a run goes under "Needs a test run" — never a guessed
-command.
-
-A command you did not run — because it needs Docker you don't have, a live key, or is simply out of
-scope — goes under "Needs a test run" for the user to run themselves; do not guess its result.
+No check command found → the profile reference § 4 line in the report header, and every AC that
+needed a run goes under "Needs a test run". A command you did not run (needs Docker, a live key, or
+out of scope) goes there too, for the user; do not guess its result.
 
 ## Recheck — a follow-up in the same conversation
 
