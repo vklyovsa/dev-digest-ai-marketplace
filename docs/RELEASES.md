@@ -50,8 +50,9 @@ claude plugin tag --push                       # or: claude plugin tag && git pu
 
 `scripts/release.sh <plugin>` runs the same checks and prints the commands; it never pushes.
 
-Release evidence (in the PR description and the CHANGELOG entry): version, tag, commit SHA,
-eval pass rate and cost.
+Release evidence — version, tag, commit SHA, eval pass rate and cost — goes into the PR
+description and the GitHub Release notes of the tag
+(`gh release create <plugin>--v<version> --notes …`). The CHANGELOG entry says what changed.
 
 ## How users get updates
 
@@ -135,6 +136,23 @@ repository (`specs/`, the retro ledger, `INSIGHTS.md`) and are untouched by a ro
 **External state.** No plugin here changes anything outside the working tree (no network
 writes, no databases, no tickets), so a rollback has no external state to restore. A plugin
 that ever does must document its own recovery here.
+
+### Consumer verification
+
+The consumer repository is DevDigest itself, on branch `test/l08-sdd-plugin` (commit `6a3da56`
+of `vklyovsa/dev-digest`, local only): its own copies of the SDD agents, `/implement`,
+`workflow-retro`, `engineering-insights` and the paved-path skills are deleted, the plugin is
+installed at project scope, and `.claude/sdd-profile.md` supplies its inputs.
+
+| date | check | result |
+|---|---|---|
+| 2026-10-17 | install `sdd-engineering@dev-digest-ai-marketplace --scope project` | 3 dependencies installed with it, resolved from tags (`1.0.0-2a5ccef6ee8b`); `plugin list --json`: no errors |
+| 2026-10-17 | spec + plan of a small feature (SPEC-11, `mcp/specs/`) | `sdd-engineering:spec-creator` → `sdd-engineering:implementation-planner`, paved-path skills via `engineering-paved-path:*`; session init lists all four plugins at 1.0.0; $2.09 |
+| 2026-10-17 | `/sdd-engineering:run-plan` on that plan | implementer ×2 → check command (315 tests green) → plan-verifier (33 done, 1 declared deviation) → `architecture-review:architecture-reviewer` (no findings); $1.27 |
+| 2026-10-17 | `research-tools:researcher`, REPO mode | answer with `file:line` evidence; $0.28 |
+| 2026-10-17 | `/sdd-engineering:workflow-retro deep --session …` (typed by the user's instruction) | scripts ran from the plugin cache through `${CLAUDE_SKILL_DIR}`; ledger entry passed `ledger.mjs check` |
+| 2026-10-17 | manual update: `claude plugin marketplace update dev-digest-ai-marketplace`, then `claude plugin update sdd-engineering@dev-digest-ai-marketplace --scope project` | 1.0.0 → 1.1.0, dependencies stay at 1.0.0 (`^1.0.0`); a new session's init shows `sdd-engineering@1.1.0` |
+| 2026-10-17 | 1.1.0 behaviour on a draft with an uncovered story (SPEC-12) | story kept, criterion marked `[NEEDS CLARIFICATION]`, blocking question returned, spec stays `draft`; $0.95 |
 
 ### Auto-update check
 

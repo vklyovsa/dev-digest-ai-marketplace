@@ -39,7 +39,6 @@ zod/
 ├── README.md         # This file
 └── rules/
     ├── _sections.md  # Category definitions
-    ├── _template.md  # Rule template
     ├── schema-*.md   # Schema definition rules
     ├── parse-*.md    # Parsing rules
     ├── type-*.md     # Type inference rules

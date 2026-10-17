@@ -160,3 +160,22 @@ Then ask for a spec: "Write a spec for <feature>". Optionally add `.claude/sdd-p
 (at least `check_command`), so verification has a command to run.
 
 Extracted from the Spec Driven Development workflow of the DevDigest project.
+
+## Evals
+
+Fixture repository: `evals/fixtures/notes-api` (Node, `node:http`, `npm test`), staged by each
+case's `scaffold.sh`. Every case loads the three dependencies too.
+
+| Case | Checks |
+|---|---|
+| `smoke-components` | the four agents and both dependency agents are visible under namespaced ids |
+| `negative-unrelated` | an unrelated question starts no SDD agent or skill |
+| `retro-manual-only` | "wrap up the session" does not start `workflow-retro` and writes no ledger |
+| `spec-creator-clarifies` | a vague request gets questions, not invented requirements |
+| `spec-and-plan` | the fixed cost-baseline scenario: spec-creator → approval → planner, 20 deterministic graders on the spec and plan (`docs/COST-BASELINE.md`) |
+| `spec-requires-ac` | 1.1.0: an uncovered story is kept, marked `[NEEDS CLARIFICATION]` and asked about |
+| `run-plan-builds` | `/sdd-engineering:run-plan` on an approved plan: implementer → plan-verifier → architecture-review, tests green |
+
+```bash
+scripts/eval.sh sdd-engineering --ablation none --trust-plugin --scaffold --allow-tools Bash Write Edit
+```

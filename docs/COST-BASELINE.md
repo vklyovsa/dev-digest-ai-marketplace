@@ -25,14 +25,23 @@ node scripts/eval-metrics.mjs <out>.json --md
 
 ## Quality gate
 
-16 graders. Deterministic: both agents ran, no implementer ran, spec and plan files exist,
-the spec says approved, has EARS criteria, AC IDs, an edge-case section, the tag limit and
-the `GET /notes?tag=` filter, and no code blocks. LLM-judged: acceptance criteria describe
-observable behaviour; the plan cites the spec, adds no requirement, names `npm test`, keeps
-the repository's layering; no source or test file was edited.
+**Current gate — 21 graders, 20 deterministic.** Agents: spec-creator and the planner ran, no
+implementer ran. Files: spec and plan exist, review copies exist. Spec: status approved, EARS
+criteria, AC IDs, an edge-case section, the tag limit, the `GET /notes?tag=` filter, no code
+block, no file name / function call / `function` inside an acceptance criterion (the `verify:`
+hint may name code). Plan: cites the spec as its source, references AC IDs, has stages, names
+`npm test` / `node --test`, keeps routing in `src/server.js` and behaviour in `src/notes.js`.
+One LLM judge reads the trace: no source or test file was edited.
 
-A run passes when all 16 pass. Critical failure = a deterministic grader fails (wrong agent,
-missing artifact, implementation started).
+A run passes when all 21 pass. Critical failure = an agent, artifact or "nothing implemented"
+grader fails.
+
+**Gate used for the baseline and the optimisation arms below — 16 graders**, the same
+deterministic ones minus the plan and AC regexes (13), plus three LLM judges:
+`nothing-implemented`, and `plan-quality` / `spec-behaviour-not-code` over the whole
+14–20 k-character files. The last two split their
+votes on correct artifacts, so they were replaced; both arms were scored by the same gate, so
+the comparison stands.
 
 ## Baseline — sdd-engineering 1.0.0 candidate, commit `b37449d`
 
@@ -92,7 +101,17 @@ $5.97. Deterministic graders: 3/3 green. One failure: `plan-quality`, votes FAIL
 | 2026-10-17 | `b37449d` | baseline | 3 | above |
 | 2026-10-17 | `4c40e7d` | optimisation | 3 | above |
 | 2026-10-17 | `88fa865` (1.1.0) + regex plan graders | release check | 3 | 2/3 pass, $1.94 median, 454 s; the one failure is the LLM judge `spec-behaviour-not-code` (votes FAIL/PASS/FAIL) on a spec whose criteria hold no code reference |
-| 2026-10-17 | same + `spec-acs-no-code` regex | — | 3 | not measured: the account hit its session limit 25 s into each run. The new regex was replayed offline on the nine specs kept from the three measured arms: all nine pass, and a planted `createNote()` / `src/notes.js` criterion fails it. Re-run `spec-and-plan` to close this row |
+| 2026-10-17 | `b3310c5` (1.1.0) + `spec-acs-no-code` regex | — | 3 | discarded: the account hit its session limit 25 s into each run (no artifacts) |
+| 2026-10-17 | `b3310c5` (1.1.0), current 21-grader gate | release gate | 3 | **3/3 pass**, 21/21 graders each; median $1.973, median 391 s; run 2 relaunched agents (5 launches, $3.12) |
 
-The quality gate now has 21 graders, 20 of them deterministic; the one LLM judge left
-(`nothing-implemented`) reads the trace and has passed on every run.
+## Current state — sdd-engineering 1.1.0, current gate
+
+| run | score | cost | latency | input | output | cache read | cache write | API calls | tool calls | agent launches |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 1 | 1.000 | $1.973 | 383s | 46 | 43 704 | 667 261 | 160 535 | 21 | 38 | 2 |
+| 2 | 1.000 | $3.115 | 782s | 88 | 75 795 | 1 386 945 | 223 168 | 39 | 84 | 5 |
+| 3 | 1.000 | $1.756 | 391s | 50 | 43 028 | 758 024 | 120 467 | 23 | 39 | 2 |
+
+Median **$1.973**, **391 s**, pass rate **3/3**, suite cost with the judge $6.85. As in the
+baseline, the costly outlier is a run where the session relaunched agents — the next
+optimisation target.

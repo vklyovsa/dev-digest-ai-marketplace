@@ -3,6 +3,16 @@
 All notable changes to this plugin are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follow SemVer.
 
+## [1.0.1] - 2026-10-17
+
+### Removed
+
+- Upstream packaging leftovers: `fastify-best-practices/tile.json` (registry manifest) and `zod/assets/templates/_template.md` (authoring template).
+
+### Added
+
+- README: an Evals section.
+
 ## [1.0.0] - 2026-10-17
 
 ### Added

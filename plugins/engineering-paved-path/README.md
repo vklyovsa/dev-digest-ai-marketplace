@@ -88,3 +88,14 @@ community security skills listed in its `references.md`), `mermaid-diagram`, and
 
 Upstream skills keep their original licences; check the upstream repository before
 redistributing a modified copy.
+
+## Evals
+
+| Case | Checks |
+|---|---|
+| `zod-skill-triggers` | a Zod schema task loads `engineering-paved-path:zod` and answers with `z.infer` |
+| `negative-prose` | an unrelated request loads no paved-path skill |
+
+```bash
+scripts/eval.sh engineering-paved-path --ablation none --trust-plugin   # from the marketplace root
+```

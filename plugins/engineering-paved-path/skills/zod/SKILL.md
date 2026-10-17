@@ -106,7 +106,6 @@ Reference these guidelines when:
 Read individual reference files for detailed explanations and code examples:
 
 - [Section definitions](references/_sections.md) - Category structure and impact levels
-- [Rule template](assets/templates/_template.md) - Template for adding new rules
 - Individual rules: `references/{prefix}-{slug}.md`
 
 ## Full Compiled Document

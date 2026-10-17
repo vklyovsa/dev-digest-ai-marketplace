@@ -140,7 +140,7 @@ Every plugin card and detail page shows
 
 Dark-first with a light theme toggle (persisted in `localStorage`), IBM Plex Sans / Mono,
 accent colour per artifact kind (plugin blue, skill green, agent violet, command amber, hook
-lime, mcp red) — following the design prototype `Catalog.dc.html`.
+lime, mcp red) — following the Claude Design prototype `Catalog.dc.html` from the L08 course materials (not kept in this repository).
 
 ## Acceptance
 

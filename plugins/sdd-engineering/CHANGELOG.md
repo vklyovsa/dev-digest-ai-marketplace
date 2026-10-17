@@ -3,6 +3,12 @@
 All notable changes to `sdd-engineering`. Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
 versions follow [SemVer](https://semver.org/).
 
+## [Unreleased]
+
+### Added
+
+- Eval `run-plan-builds` for the build half (implementer → plan-verifier → architecture review); README Evals section. Not shipped behaviour — no version bump.
+
 ## [1.1.0] - 2026-10-17
 
 ### Added
