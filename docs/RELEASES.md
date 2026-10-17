@@ -40,7 +40,7 @@ Dependencies first, consumers last.
 git switch main && git pull --ff-only
 node scripts/validate.mjs
 claude plugin validate . && claude plugin validate plugins/<name>
-claude plugin eval plugins/<name> --runs 3 --no-publish     # paste the summary into the PR / CHANGELOG
+scripts/eval.sh <name> --ablation none --trust-plugin --scaffold --allow-tools Bash Write Edit   # paste the summary into the PR / release
 
 # 2. Tag — validates that plugin.json and the marketplace entry agree, refuses a dirty tree
 cd plugins/<name>
