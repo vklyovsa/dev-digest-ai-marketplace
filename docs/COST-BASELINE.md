@@ -91,3 +91,8 @@ $5.97. Deterministic graders: 3/3 green. One failure: `plan-quality`, votes FAIL
 | 2026-10-17 | `a27adb7` | baseline | 3 | discarded: one LLM judge for the whole 14 k-char spec failed on every run; replaced by regex graders |
 | 2026-10-17 | `b37449d` | baseline | 3 | above |
 | 2026-10-17 | `4c40e7d` | optimisation | 3 | above |
+| 2026-10-17 | `88fa865` (1.1.0) + regex plan graders | release check | 3 | 2/3 pass, $1.94 median, 454 s; the one failure is the LLM judge `spec-behaviour-not-code` (votes FAIL/PASS/FAIL) on a spec whose criteria hold no code reference |
+| 2026-10-17 | same + `spec-acs-no-code` regex | — | 3 | not measured: the account hit its session limit 25 s into each run. The new regex was replayed offline on the nine specs kept from the three measured arms: all nine pass, and a planted `createNote()` / `src/notes.js` criterion fails it. Re-run `spec-and-plan` to close this row |
+
+The quality gate now has 21 graders, 20 of them deterministic; the one LLM judge left
+(`nothing-implemented`) reads the trace and has passed on every run.

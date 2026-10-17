@@ -136,6 +136,12 @@ repository (`specs/`, the retro ledger, `INSIGHTS.md`) and are untouched by a ro
 writes, no databases, no tickets), so a rollback has no external state to restore. A plugin
 that ever does must document its own recovery here.
 
+### Auto-update check
+
+| date | where | change | result |
+|---|---|---|---|
+| 2026-10-17 | DevDigest, project scope, `autoUpdate: true` on the `extraKnownMarketplaces` entry | `research-tools` 1.0.0 → 1.0.1 (tag `research-tools--v1.0.1`) | a new session updated it by itself within 10 minutes of its first message: `1.0.0-2a5ccef6ee8b` → `1.0.1-bde830a75662`; no `plugin update` was run |
+
 ### Rehearsal log
 
 | date | where | from → to | result |
