@@ -22,7 +22,7 @@ claude plugin marketplace add $repo#$tag --scope $scope
 claude plugin install $plugin@$mp --scope $scope
 claude plugin list --json
 # /reload-plugins or a new session, then:
-claude plugin eval $plugin@$mp --case 'smoke-*' --runs 1 --no-publish
+claude -p "List every subagent type whose id starts with sdd-engineering:, research-tools: or architecture-review:. Print only the ids." --allowedTools Agent --max-budget-usd 1
 
 # back to latest:
 claude plugin marketplace remove $mp
