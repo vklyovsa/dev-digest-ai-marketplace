@@ -50,17 +50,47 @@ graders:
   - name: review-copies
     type: file_exists
     path: 'specs/_review/plan.md'
-  - name: spec-quality
+  - name: spec-approved
+    type: regex
+    target: {source: file, path: specs/_review/spec.md}
+    pattern: '^\*{0,2}Status:?\*{0,2}:?\s*approved'
+    flags: im
+  - name: spec-ears
+    type: regex
+    target: {source: file, path: specs/_review/spec.md}
+    pattern: '\b(WHEN|IF|WHILE|WHERE)\b[^\n]{0,400}\bshall\b'
+    flags: i
+  - name: spec-ac-ids
+    type: regex
+    target: {source: file, path: specs/_review/spec.md}
+    pattern: '\bAC-\d+\b'
+  - name: spec-edge-cases
+    type: regex
+    target: {source: file, path: specs/_review/spec.md}
+    pattern: '^#+ .*edge cases'
+    flags: im
+  - name: spec-tag-limit
+    type: regex
+    target: {source: file, path: specs/_review/spec.md}
+    pattern: '(at most|up to|more than|maximum|max\.?|limit)[^\n]{0,60}\b\d+\b[^\n]{0,30}tags?'
+    flags: i
+  - name: spec-filter
+    type: regex
+    target: {source: file, path: specs/_review/spec.md}
+    pattern: 'GET /notes\?tag='
+  - name: spec-no-code
+    type: regex
+    target: {source: file, path: specs/_review/spec.md}
+    pattern: '```(js|javascript|ts|typescript)\b'
+    match: not_contains
+  - name: spec-behaviour-not-code
     type: llm
     focus: {source: file, path: specs/_review/spec.md}
     criteria: |
-      This is the spec. PASS if all hold: requirements (user stories, goals or functional
-      requirements) carry IDs; every one of them is covered by at least one acceptance criterion;
-      acceptance criteria are written in EARS form (When/While/If/Where … the system shall …);
-      it covers a limit on tags per note and the GET /notes filter by one tag; it lists edge
-      cases (e.g. unknown tag, too many tags, invalid tag); it contains no implementation detail
-      such as function names, code snippets or file-by-file changes; its status says approved.
-      FAIL otherwise, naming the first rule broken.
+      Judge only the acceptance criteria of this spec. PASS if they describe behaviour an API
+      client can observe (requests, responses, status codes, error bodies, ordering) rather than
+      prescribing internal code structure (which function to add, how to change a file).
+      References to existing code that describe the current state are fine. FAIL otherwise.
   - name: plan-quality
     type: llm
     focus: {source: file, path: specs/_review/plan.md}
