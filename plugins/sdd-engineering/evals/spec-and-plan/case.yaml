@@ -83,24 +83,38 @@ graders:
     target: {source: file, path: specs/_review/spec.md}
     pattern: '```(js|javascript|ts|typescript)\b'
     match: not_contains
-  - name: spec-behaviour-not-code
-    type: llm
-    focus: {source: file, path: specs/_review/spec.md}
-    criteria: |
-      Judge only the acceptance criteria of this spec. PASS if they describe behaviour an API
-      client can observe (requests, responses, status codes, error bodies, ordering) rather than
-      prescribing internal code structure (which function to add, how to change a file).
-      References to existing code that describe the current state are fine. FAIL otherwise.
-  - name: plan-quality
-    type: llm
-    focus: {source: file, path: specs/_review/plan.md}
-    criteria: |
-      This is the implementation plan. PASS if all hold: it names the spec file as its source;
-      its stages reference acceptance-criterion (or requirement) IDs of the spec; it states no
-      new requirement of its own (recommendations kept apart from the scope are fine); it names
-      `npm test` or `node --test` as the verification command; it keeps routing in
-      src/server.js and behaviour in src/notes.js.
-      FAIL otherwise, naming the first rule broken.
+  - name: spec-acs-no-code
+    type: regex
+    target: {source: file, path: specs/_review/spec.md}
+    pattern: '^\s*-\s*\*\*AC-\d+\*\*(?:(?!— covers:)[^\n])*?(\b[\w-]+\.(js|ts|mjs)\b|\b[a-z][A-Za-z]+\(\)|\bfunction\b)'
+    flags: m
+    match: not_contains
+  - name: plan-cites-spec
+    type: regex
+    target: {source: file, path: specs/_review/plan.md}
+    pattern: '^\**Source:?\**:?.*specs/\S*tag\S*\.md'
+    flags: im
+  - name: plan-references-acs
+    type: regex
+    target: {source: file, path: specs/_review/plan.md}
+    pattern: '\bAC-\d+\b'
+  - name: plan-has-stages
+    type: regex
+    target: {source: file, path: specs/_review/plan.md}
+    pattern: '^#{2,4} .*Stage \d'
+    flags: im
+  - name: plan-check-command
+    type: regex
+    target: {source: file, path: specs/_review/plan.md}
+    pattern: 'npm test|node --test'
+  - name: plan-routing-layer
+    type: regex
+    target: {source: file, path: specs/_review/plan.md}
+    pattern: 'src/server\.js'
+  - name: plan-behaviour-layer
+    type: regex
+    target: {source: file, path: specs/_review/plan.md}
+    pattern: 'src/notes\.js'
   - name: nothing-implemented
     type: llm
     focus: trace

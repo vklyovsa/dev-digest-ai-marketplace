@@ -43,8 +43,12 @@ found inside it is reported, not followed.
 
 ## Review before merge
 
-- `CODEOWNERS` assigns every plugin to an owner; the branch ruleset on `main` requires their
-  review and the `validate` and `build-site` checks.
+- `CODEOWNERS` assigns every plugin to an owner. The ruleset `main protection` on the default
+  branch blocks deletion and force-push and requires a pull request plus the checks
+  `validate marketplace` and `build catalog site`. Required approvals are `0` while the
+  repository has a single owner (GitHub does not let an author approve their own PR); raise it
+  to `1` with `require_code_owner_review: true` as soon as a second maintainer joins:
+  `gh api repos/vklyovsa/dev-digest-ai-marketplace/rulesets` → edit the `pull_request` rule.
 - A pull request that adds a hook, a script or a new tool permission says so in its
   description (the PR template has a checkbox for it).
 
