@@ -1,6 +1,7 @@
 ---
 description: Arithmetic needs no researcher.
 tags: [negative]
+plugins: [../..]
 runs: 1
 max_turns: 3
 allowed_tools: [Agent]

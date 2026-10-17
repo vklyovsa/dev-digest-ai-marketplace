@@ -6,9 +6,10 @@ description: >
   it on the user's standing instruction, implementation-planner plans from it, nothing is
   implemented.
 tags: [baseline, sdd]
+plugins: [../../../engineering-paved-path, ../../../research-tools, ../../../architecture-review, ../..]
 runs: 3
 context:
-  scaffold_script: ../_scaffold/notes-api.sh
+  scaffold_script: scaffold.sh
 execution:
   max_turns: 80
   timeout_seconds: 1800
@@ -23,6 +24,8 @@ execution:
     - When the spec's self-check passes, treat my approval as given: set it to approved.
     - Execution mode for the plan: single-agent.
     - Save the plan file next to the spec.
+    - Last step, for my reviewer: copy the final spec to `specs/_review/spec.md` and the plan to
+      `specs/_review/plan.md` (plain `mkdir -p` + `cp`).
 graders:
   - name: spec-creator-ran
     type: tool_used
@@ -36,6 +39,7 @@ graders:
     type: tool_used
     tool: Agent
     input_match: 'sdd-engineering:implementer'
+    min: 0
     max: 0
   - name: spec-file
     type: file_exists
@@ -43,32 +47,64 @@ graders:
   - name: plan-file
     type: file_exists
     path: 'specs/*-plan.md'
-  - name: spec-quality
+  - name: review-copies
+    type: file_exists
+    path: 'specs/_review/plan.md'
+  - name: spec-approved
+    type: regex
+    target: {source: file, path: specs/_review/spec.md}
+    pattern: '^\*{0,2}Status:?\*{0,2}:?\s*approved'
+    flags: im
+  - name: spec-ears
+    type: regex
+    target: {source: file, path: specs/_review/spec.md}
+    pattern: '\b(WHEN|IF|WHILE|WHERE)\b[^\n]{0,400}\bshall\b'
+    flags: i
+  - name: spec-ac-ids
+    type: regex
+    target: {source: file, path: specs/_review/spec.md}
+    pattern: '\bAC-\d+\b'
+  - name: spec-edge-cases
+    type: regex
+    target: {source: file, path: specs/_review/spec.md}
+    pattern: '^#+ .*edge cases'
+    flags: im
+  - name: spec-tag-limit
+    type: regex
+    target: {source: file, path: specs/_review/spec.md}
+    pattern: '(at most|up to|more than|maximum|max\.?|limit)[^\n]{0,60}\b\d+\b[^\n]{0,30}tags?'
+    flags: i
+  - name: spec-filter
+    type: regex
+    target: {source: file, path: specs/_review/spec.md}
+    pattern: 'GET /notes\?tag='
+  - name: spec-no-code
+    type: regex
+    target: {source: file, path: specs/_review/spec.md}
+    pattern: '```(js|javascript|ts|typescript)\b'
+    match: not_contains
+  - name: spec-behaviour-not-code
     type: llm
-    focus: files
+    focus: {source: file, path: specs/_review/spec.md}
     criteria: |
-      Look at the spec file under specs/ (not the -plan.md).
-      PASS if all hold: it has functional requirements with IDs; every functional requirement
-      has at least one acceptance criterion written in EARS form (When/While/If/Where … the
-      system shall …); it covers the tag limit and the GET /notes filter; it states
-      edge cases (e.g. unknown tag, too many tags, invalid tag); it contains no implementation
-      detail such as function names, file-level code changes or code snippets; its status line
-      says approved.
-      FAIL otherwise, naming the first rule broken.
+      Judge only the acceptance criteria of this spec. PASS if they describe behaviour an API
+      client can observe (requests, responses, status codes, error bodies, ordering) rather than
+      prescribing internal code structure (which function to add, how to change a file).
+      References to existing code that describe the current state are fine. FAIL otherwise.
   - name: plan-quality
     type: llm
-    focus: files
+    focus: {source: file, path: specs/_review/plan.md}
     criteria: |
-      Look at the plan file specs/*-plan.md and the spec beside it.
-      PASS if all hold: the plan names the spec as its source; its stages reference the
-      spec's requirement or acceptance-criterion IDs; it introduces no requirement that the
-      spec does not contain; it names `npm test` (or `node --test`) as the verification
-      command; it keeps routing in src/server.js and behaviour in src/notes.js as AGENTS.md
-      requires.
+      This is the implementation plan. PASS if all hold: it names the spec file as its source;
+      its stages reference acceptance-criterion (or requirement) IDs of the spec; it states no
+      new requirement of its own (recommendations kept apart from the scope are fine); it names
+      `npm test` or `node --test` as the verification command; it keeps routing in
+      src/server.js and behaviour in src/notes.js.
       FAIL otherwise, naming the first rule broken.
   - name: nothing-implemented
     type: llm
     focus: trace
     criteria: |
       PASS if no file under src/ or test/ was created or modified during the run (only files
-      under specs/ were written). FAIL if any source or test file was edited.
+      under specs/ were written; ignore .git/, which the eval harness
+      writes). FAIL if any source or test file was edited.

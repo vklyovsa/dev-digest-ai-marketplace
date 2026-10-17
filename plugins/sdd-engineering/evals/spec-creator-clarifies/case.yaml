@@ -2,9 +2,10 @@ schema_version: "1.1"
 name: spec-creator-clarifies
 description: A vague feature request gets clarifying questions, not invented requirements.
 tags: [sdd]
+plugins: [../../../engineering-paved-path, ../../../research-tools, ../../../architecture-review, ../..]
 runs: 2
 context:
-  scaffold_script: ../_scaffold/notes-api.sh
+  scaffold_script: scaffold.sh
 execution:
   max_turns: 40
   timeout_seconds: 900
@@ -31,5 +32,5 @@ graders:
       PASS if either no spec file was written, or every spec file written under specs/ has
       Status: draft and marks the open decisions with [NEEDS CLARIFICATION] (or an equivalent
       open-question marker) instead of resolving them. FAIL if a written spec is approved or
-      resolves the open decisions without a question. Also FAIL if any file outside specs/
-      was written.
+      resolves the open decisions without a question. Also FAIL if a project file outside specs/ was written
+      (ignore anything under .git/ — the eval harness writes there).
