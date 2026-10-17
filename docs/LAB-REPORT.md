@@ -15,9 +15,9 @@ catalog: https://vklyovsa.github.io/dev-digest-ai-marketplace/
 | 5 | Four plugins registered; version only in `plugin.json` | [`.claude-plugin/marketplace.json`](../.claude-plugin/marketplace.json); `claude plugin validate --strict` on the root and each plugin |
 | 6 | Static catalog on GitHub Pages: index at build time, search, detail pages, Copy install, DOMPurify, generated files not committed | [`SITE-SPEC.md`](SITE-SPEC.md), [`scripts/build-index.mjs`](../scripts/build-index.mjs), [`site/`](../site), [`pages.yml`](../.github/workflows/pages.yml); PR #2 |
 | 7 | Structure validation + behaviour evals, incl. negative ones | CI `validate marketplace` (repo rules, `plugin validate`, guard tables 110/125/152 rows); evals per plugin — see below |
-| 8 | Cost baseline and one optimisation, honest result | [`COST-BASELINE.md`](COST-BASELINE.md): dedupe of instructions was cost-neutral ($1.83 → $1.85 median, inside noise), recorded as such |
+| 8 | Cost baseline and one optimisation, honest result | [`COST-BASELINE.md`](COST-BASELINE.md): dedupe of instructions was cost-neutral ($1.83 → $1.85 median, inside noise), recorded as such; [cost per successful workflow](COST-BASELINE.md#cost-per-successful-workflow) $2.12 → $1.99 under deterministic graders |
 | 9 | Release 1.0.0, dependencies first, tags on CI-green commits | tags `engineering-paved-path--v1.0.0`, `research-tools--v1.0.0`, `architecture-review--v1.0.0`, `sdd-engineering--v1.0.0` @ `2a5ccef`; GitHub Releases with evidence |
-| 10 | Installed in another existing repository, short workflow without DevDigest files | DevDigest branch `test/l08-sdd-plugin` (commit `6a3da56`) with its own SDD copies deleted — [`RELEASES.md` § Consumer verification](RELEASES.md#consumer-verification) |
+| 10 | Installed in another existing repository, short workflow without DevDigest files | DevDigest branch [`test/l08-sdd-plugin`](https://github.com/vklyovsa/dev-digest/tree/test/l08-sdd-plugin) (commits `6a3da56` — plugin installed, own SDD copies deleted; `50a7f1f` — `autoUpdate: true` and the run's retro) — [`RELEASES.md` § Consumer verification](RELEASES.md#consumer-verification) |
 | 11 | Update to 1.1.0 confirmed by eval; rollback to 1.0.0 rehearsed | PR #5, tag `sdd-engineering--v1.1.0` @ `88fa865`; [`RELEASES.md` § Rollback](RELEASES.md#rollback) with the rehearsal log |
 
 ## Final checklist
@@ -35,6 +35,7 @@ catalog: https://vklyovsa.github.io/dev-digest-ai-marketplace/
 | 1.0.0 installs into another existing project | ✅ | consumer verification |
 | Supporting files and scripts survive the plugin cache | ✅ | `workflow-retro` scripts ran from the cache via `${CLAUDE_SKILL_DIR}`; `check-spec.mjs` from `${CLAUDE_PLUGIN_ROOT}` |
 | Cost experiment: baseline, quality gate, honest result | ✅ | `COST-BASELINE.md` |
+| Cost per successful workflow before and after | ✅ | `COST-BASELINE.md` § Cost per successful workflow: $2.12 → $1.99 (deterministic graders; the LLM-judged $6.37 → $2.99 is judge noise) |
 | Catalog update and plugin update checked separately | ✅ | manual `marketplace update` + `plugin update` (1.0.0 → 1.1.0) and auto-update (`research-tools` 1.0.0 → 1.0.1) in `RELEASES.md` |
 | 1.1.0 behaviour confirmed by an eval | ✅ | `spec-requires-ac`: story kept + marked open 2/2 on 1.1.0 vs 0/2 on 1.0.0 (1.0.0 deleted it) |
 | Stable channel returns 1.0.0, smoke passes | ✅ | rehearsal log |
