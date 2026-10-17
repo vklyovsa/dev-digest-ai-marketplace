@@ -105,7 +105,15 @@ flowchart TD
 ## Evals
 
 - Every behaviour a plugin promises has a case in `evals/<case>/` (`prompt.md` +
-  `graders/*.md`), runnable with `claude plugin eval plugins/<name>`.
+  `graders/*.md`, or `case.yaml`), run with `scripts/eval.sh <name>`.
+- `claude plugin eval plugins/<name>` loads only that plugin, so a plugin with dependencies does
+  not load at all. `scripts/eval.sh` runs from the marketplace root, and each case lists what it
+  needs: `plugins: [../../../<dependency>, …, ../..]`. A `scaffold_script` lives inside its case
+  directory; a grader with `max: 0` also needs `min: 0`.
+- An `llm` grader with `focus: files` sees file **names** only; judge content with
+  `focus: {source: file, path: <exact path>}` (no globs), and prefer `regex` graders for long
+  artifacts.
+- Granting `Bash` needs the sandbox (`bubblewrap` + `socat` on Linux).
 - At least one **negative** case: an unrelated request must not trigger the plugin.
 - Free graders (`regex`, `tool_used`, `tool_order`, `file_exists`) first; an `llm` grader only
   for what a pattern cannot judge.

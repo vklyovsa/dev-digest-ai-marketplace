@@ -15,4 +15,4 @@
 
 ## Eval evidence
 
-<!-- `claude plugin eval plugins/<name> --runs 3` summary: pass rate, cost, latency. "n/a — docs only" is fine. -->
+<!-- `scripts/eval.sh <name> …` summary: pass rate, cost, latency. "n/a — docs only" is fine. -->

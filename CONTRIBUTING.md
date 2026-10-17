@@ -35,7 +35,7 @@ node scripts/validate.mjs                       # repository rules (names, versi
 claude plugin validate .                        # marketplace manifest
 claude plugin validate plugins/<name>           # each plugin you touched
 node plugins/<name>/scripts/check-guard*.mjs    # hook case tables, if the plugin has hooks
-claude plugin eval plugins/<name> --runs 3 --no-publish     # behaviour (costs model calls)
+scripts/eval.sh <name> --ablation none --trust-plugin --scaffold --allow-tools Bash Write Edit   # behaviour (costs model calls)
 npm run build:index && (cd site && npm ci && npm run build)  # when you touched the catalog or a README
 ```
 
